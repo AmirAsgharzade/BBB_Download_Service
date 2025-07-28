@@ -1,0 +1,139 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f5f6fa;
+  margin: 0;
+  padding: 0;
+}
+h1{
+  text-align: center;
+  margin-top: 35px;
+  font-size: 10vh;
+}
+
+nav{
+  display:flex;
+  justify-content: flex-start;
+  background-color: #333;
+  padding: 10px 20px;
+}
+
+nav button{
+  background-color: #4CAF50; /* Green background */
+  border: none;
+  color: white;
+  padding: 10px 16px;
+  margin-left: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+nav button.login {
+  background-color: #008CBA; /* Blue */
+}
+
+nav button:hover {
+  background-color: #45a049;
+}
+
+nav button.logoutbtn{
+  background-color: rgb(227, 31, 31);
+}
+
+nav button.login:hover {
+  background-color: #007bb5;
+}
+nav button.logoutbtn:hover{
+  background-color: red;
+}
+.his-btn{
+  background-color: #556B2F;
+}
+.his-btn:hover{
+  background-color: #6B8E23;
+}
+.send-btn {
+  width: 30%;
+  margin: 10px auto;
+  padding: 15px;
+  background: #3498db;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 15px;
+}
+
+.loggedin{
+display: flex;
+align-items: center;
+gap: 10px;
+
+}
+
+.container {
+  width: 90%;
+  max-width: 700px;
+  margin: 90px auto;
+  padding: 30px;
+  background: white;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  border-radius: 15px;
+}
+
+.inp-container{
+  display: flex;
+  align-items: center;
+
+}
+
+.button_wrapper{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container input[type="text"] {
+  flex: 1;              
+    padding: 10px;
+    font-size: 16px;
+    box-sizing: border-box;
+  border-radius: 15px;
+  outline: none;
+  border: 1px solid black;
+
+}
+
+.container button{
+  width: 80px;          /* button width */
+    padding: 8px;
+    font-size: 16px;
+    margin-left: 8px;     /* space between input and button */
+    cursor: pointer;
+}
+
+
+span{
+  display: flex;
+  justify-content: center;
+  color: white;
+}
+
+
+ #image-container {
+    display: flex;
+    gap: 10px;           /* space between images */
+    flex-wrap: nowrap;   /* keep images on one line */
+    justify-content: center;
+    align-items: center;
+    overflow-x: auto;    /* scroll if overflow */
+    padding: 10px;
+  }
+
+  #image-container img {
+    width: 15vw;         /* 20% of viewport width — adjust to fit 3-5 images */
+    height: auto;        /* keep aspect ratio */
+    object-fit: contain; /* prevent cropping */
+    flex-shrink: 0;      /* don’t shrink smaller than width */
+    border: 1px solid #ccc; /* optional border for clarity */
+    border-radius: 4px;
+  }

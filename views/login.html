@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Login</title>
+  <link rel="stylesheet" href="/css/login.css" />
+</head>
+<body>
+  <div class="container">
+    <h2>Login</h2>
+    
+    <div>
+      <input type="radio" name="loginType" value="phone" checked id="phonetype" class="radio"/> 
+      <label for="phonetype">Login with Phone</label>
+      <input type="radio" name="loginType" value="email" id="emailtype" class="radio"/> 
+      <label for="emailtype">Login with Email</label>
+    </div>
+    
+    <div id="phoneLogin" class="login-method">
+      <div id="phoneStep1">
+        <input type="text" id="loginPhone" placeholder="Enter phone number" />
+        <div id="phone-status"></div>
+        <div id="user-status"></div>
+        <div class="button_wrapper">
+          <button onclick="sendLoginCode()">Send Code</button>
+        </div>
+      </div>
+      <div id="phoneStep2" style="display:none;">
+        <input type="text" id="loginCode" placeholder="Enter verification code" />
+        <div id="code-status"></div>
+        <div class="button_wrapper">
+          <button onclick="verifyLoginCode()">Verify</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="emailLogin" class="login-method" style="display:none;">
+      <input type="email" id="loginEmail" placeholder="Email" />
+      <input type="password" id="loginPassword" placeholder="Password" />
+      <div id="email-status"></div>
+      <div class="button_wrapper">
+        <button onclick="loginWithEmail()">Login</button>
+      </div>
+    </div>
+
+    <div id="all-status"></div>
+  </div>
+  <div><span>don't have an account? sign up here</span></div>
+  <div class="button_wrapper">
+    <button class="signup" onclick="goSignUp()">Signup</button>
+  </div>
+
+  <div class="Database-status"></div>
+  <script src="/js/login.js"></script>
+</body>
+</html>

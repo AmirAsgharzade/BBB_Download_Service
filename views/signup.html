@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Signup</title>
+  <link rel="stylesheet" href="/css/login.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Signup</h2>
+    <div id="step1" class="step">
+      <input type="text" id="phone" placeholder="Enter phone number" />
+      <div id="phone-status"></div>
+      <div class="button_wrapper">  
+        <button onclick="sendCode()">Send Code</button>
+      </div>
+    </div>
+
+    <div id="step2" class="step" style="display: none;">
+      <input type="text" id="code" placeholder="Enter verification code" />
+      <div id="code-status"></div>
+      <div class="button_wrapper">
+        <button onclick="verifyCode()">Verify</button>
+      </div>
+    </div>
+
+    <div id="step3" class="step" style="display: none;">
+      <input type="text" id="firstName" placeholder="First Name" />
+      <input type="text" id="lastName" placeholder="Last Name" />
+      <input type="email" id="email" placeholder="Email" />
+      <div id="email-status"></div>
+      <input type="password" id="password" placeholder="Password" />
+      <div id="pass-status"></div>
+      <div class="button_wrapper">
+        <button onclick="finalSignup()">Sign Up</button>
+      </div>
+    </div>
+    <div id="email-status"></div>
+
+  </div>
+  <div><span>Already have an account? Login here</span></div>
+  <div class="button_wrapper">
+    <button class="signup" onclick="goLogin()">login</button>
+  </div>
+
+  <div id="Database-status"></div>
+  <script src="/js/signup.js"></script>
+</body>
+</html>

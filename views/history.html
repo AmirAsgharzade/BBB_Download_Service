@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>History</title>
+  <link rel="stylesheet" href="/css/history.css" />
+  <style>
+   
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Submited Links</h2>
+    <table id="historyTable">
+      <thead>
+        <tr>
+          <th data-column="id">ID</th>
+          <th data-column="link">Link</th>
+          <th data-column="created_at">Created At</th>
+          <th data-column="downloaded_url">downloaded_url</th>
+          <th data-column="status">status</th>
+
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div class="pagination">
+      <button id="prevBtn" onclick="prevPage()">Previous</button>
+      <span id="pageInfo"></span>
+      <button id="nextBtn" onclick="nextPage()">Next</button>
+    </div>
+  </div>
+
+  <script src="/js/history.js"></script>
+</body>
+</html>

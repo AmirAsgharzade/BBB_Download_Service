@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Home</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <nav>
+
+      <header>
+        <div class="loggedin">
+          <span id="userName"></span>
+          <button id="logoutBtn" class="nav-btn logoutbtn" onclick="logout()" style="display:none;">Logout</button>
+          <button id="historyBtn" class="nav-btn his-btn" style="display:none;" onclick="goHistory()" >History</button>
+        </div>
+          <button id="loginBtn" class="nav-btn login" onclick="window.location.href='/auth/login'" style="display:none;">Login</button>
+          <button id="signupBtn" class="nav-btn" onclick="window.location.href='/auth/signup'" style="display:none;">SignUp</button>
+      </header>
+    </nav>
+    
+    
+    <h1>Welcome</h1>
+    <div class="container">
+    <main>
+      <form action="/recorder/record-meeting" method="post" id="userlinkform">
+        <div class="inp-container">
+
+          <input  type="text" id="linkInput" name="link" placeholder="Enter link here..." rows="3" style="width:100%;"></textarea>
+          <button type="submit" onclick="" class="send-btn">Send</button>
+          
+        </div>
+      </form>
+      <form action="" method="post" id="anlinkform">
+        <div class="inp-container">
+
+          <input  type="text" id="linkInput" name="link" placeholder="Enter link here..." rows="3" style="width:100%;"></textarea>
+          <button type="submit" onclick="" class="send-btn">Send</button>
+          
+        </div>
+      </form>
+    </main>
+    <div id="link-status"></div>
+    <div id="files-status"></div>
+
+  </div>
+  
+<div id="image-container"></div>
+
+  <script src="/js/home.js"></script>
+</body>
+</html>
