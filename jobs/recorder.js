@@ -9,7 +9,7 @@ const fsSync = require('fs');
 const { MAX } = require('uuid');
 
 const screenshotsDir = process.env.PREVIEW_FOLDER;
-const MAX_AGE_MS = 4*60 * 1000;
+const MAX_AGE_MS = process.env.MAX_AGE_MS;
 
 // parsing string of time to delta time
 function parseTimeToMs(timeStr) {

@@ -9,8 +9,8 @@ const SECRET = process.env.SECRET_KEY;
 const TOKEN_EXPIRATION = process.env.TOKEN_EXPIRATION;
 
 
-const codeExpiration = 3*60*1000;
-const codefpExpiration = 2*60*1000;
+const codeExpiration = process.env.CODE_EXPIRE;
+const codefpExpiration = process.env.CODE_FP_EXPIRE;
 const verificationCodes = new Map();
 const verificationfpCodes = new Map();
 
