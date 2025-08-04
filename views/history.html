@@ -9,6 +9,17 @@
   </style>
 </head>
 <body>
+  <nav>
+      <header>
+        <div class="loggedin">
+          <span id="userName"></span>
+          <button id="logoutBtn" class="nav-btn logoutbtn" onclick="logout()" style="display:inline-block;">Logout</button>
+          <button id="historyBtn" class="nav-btn his-btn" style="display:inline-block;" onclick="goHome()" >Home</button>
+          </div>
+      </header>
+    </nav>
+
+
   <div class="container">
     <h2>Submited Links</h2>
     <table id="historyTable">

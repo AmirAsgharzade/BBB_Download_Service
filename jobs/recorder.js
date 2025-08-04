@@ -6,8 +6,10 @@ const path = require('path');
 require('dotenv').config()
 const fs = require('fs').promises;
 const fsSync = require('fs');
+const { MAX } = require('uuid');
 
 const screenshotsDir = process.env.PREVIEW_FOLDER;
+const MAX_AGE_MS = 4*60 * 1000;
 
 // parsing string of time to delta time
 function parseTimeToMs(timeStr) {
@@ -72,18 +74,41 @@ async function testUrl(link){
 
 }
 
-async function deleteFolder(folderPath) {
-  if (fsSync.existsSync(folderPath)) {
-    await fs.rm(folderPath, { recursive: true, force: true });
+async function deleteFolder(foldersPath) {
+  try{
+
+    const folders = await fs.readdir(foldersPath);
+    const now = Date.now();
+    
+  for (const folder of folders){
+    const folderpath = path.join(foldersPath,folder)
+    const stats = await fs.stat(folderpath)
+    
+    if (stats.isDirectory()){
+      const age = now - stats.ctimeMs;
+      if (age > MAX_AGE_MS){
+        console.log(`Deleting old preview folder: ${folderpath}`)
+        await fs.rm(folderpath,{recursive:true,force:true})
+      }
+    }
+    
+    
+    
+
+    
+  }
+}catch(err){
+    console.log("Error during clean up:",err)
+    
   }
 }
 
 
-async function preview(link){
+async function preview(link,id){
 
 
   const screenshotsFolder = screenshotsDir
-  await fs.mkdir(screenshotsFolder,{recursive:true})
+  await fs.mkdir(path.join(screenshotsFolder,id),{recursive:true})
   
   
   const browser = await puppeteer.launch({ headless: true });
@@ -134,7 +159,7 @@ async function preview(link){
     // Take screenshot of video element
     
     if (fullvideo){
-      const screenshotPath = path.join(screenshotsFolder, `screenshot_${j + 1}.png`);
+      const screenshotPath = path.join(screenshotsFolder,id, `screenshot_${j + 1}.png`);
       await page.screenshot({path: screenshotPath,fullPage:false});
       console.log(`Screen shot ${j+1}.png`)
       j++;

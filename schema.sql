@@ -6,13 +6,13 @@ DROP TABLE IF EXISTS user_links CASCADE;
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,
   phone VARCHAR(20) UNIQUE,           -- optional, if user signs up with phone
-  email VARCHAR(255) UNIQUE NOT NULL, -- email must be unique and required
   first_name VARCHAR(100) NOT NULL,
   last_name VARCHAR(100) NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
   status VARCHAR(20) NOT NULL DEFAULT 'active', -- e.g. active, inactive, etc.
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+  updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  verification_code VARCHAR(20) NOT NULL;
 );
 
 -- USER LINKS TABLE (history of links sent)

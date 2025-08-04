@@ -2,7 +2,6 @@
 window.onload = () => {
   fetch('/auth/check-auth', { method: 'GET', credentials: 'include' })
     .then(res => {
-        console.log('testing')
       if (res.status === 200) {
         return res.json();
       }
@@ -18,7 +17,6 @@ window.onload = () => {
       document.getElementById('anlinkform').style.display='none';
     })
     .catch(() => {
-        console.log('testing2')
       document.getElementById('logoutBtn').style.display = 'none';
       document.getElementById('historyBtn').style.display = 'none';
       document.getElementById('loginBtn').style.display = 'inline-block';
@@ -52,20 +50,21 @@ userform.addEventListener('submit',async (e)=>{
 
     const formData = new FormData(userform)
     const formDataEnteries = new URLSearchParams(formData).toString()
-
+    
     fetch('/recorder/record-meeting',{
-        method:'POST',
-        headers:{
-            'Content-type':'application/x-www-form-urlencoded',
+      method:'POST',
+      headers:{
+        'Content-type':'application/x-www-form-urlencoded',
         },
         body:formDataEnteries
-
-    })
-    .then(response => response.json())
-    .then(data => {
+        
+      })
+      .then(response => response.json())
+      .then(data => {
         if (data.result){
           console.log("Response:",data)
           userform.reset()
+          document.getElementById("progress").innerHTML = "the link has been succesfully added to our list!!"
         }else{
           showError(data.error,data.type)
         }
@@ -84,14 +83,14 @@ anform.addEventListener('submit',async (e)=>{
 
     const formData = new FormData(anform)
     const formDataEnteries = new URLSearchParams(formData).toString()
-
+    document.getElementById("progress").innerHTML = "Preview in progress... it might take about 3 minutes"
     fetch('/recorder/Preview',{
-        method:'POST',
-        headers:{
-            'Content-type':'application/x-www-form-urlencoded',
-        },
+      method:'POST',
+      headers:{
+        'Content-type':'application/x-www-form-urlencoded',
+      },
         body:formDataEnteries
-
+        
     })
     .then(response => response.json())
     .then(data => {
@@ -100,10 +99,12 @@ anform.addEventListener('submit',async (e)=>{
         console.log("Response:",data)
         const container = document.getElementById('image-container');
         data.images.forEach(src => {
-        const img = document.createElement('img');
-        img.src = src;
-        container.appendChild(img);
-    })
+          const img = document.createElement('img');
+          img.src = src;
+          container.appendChild(img);
+          
+        })
+      document.getElementById("suggest").innerHTML = "Here is the preview if you would like to download the video you have to Sign in"
       }else{
 
         showError(data.error,data.type)

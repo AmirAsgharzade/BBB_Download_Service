@@ -7,43 +7,29 @@
 </head>
 <body>
   <div class="container">
-    <h2>Login</h2>
-    
-    <div>
-      <input type="radio" name="loginType" value="phone" checked id="phonetype" class="radio"/> 
-      <label for="phonetype">Login with Phone</label>
-      <input type="radio" name="loginType" value="email" id="emailtype" class="radio"/> 
-      <label for="emailtype">Login with Email</label>
-    </div>
+    <h2>Login</h2>  
     
     <div id="phoneLogin" class="login-method">
-      <div id="phoneStep1">
-        <input type="text" id="loginPhone" placeholder="Enter phone number" />
-        <div id="phone-status"></div>
-        <div id="user-status"></div>
-        <div class="button_wrapper">
-          <button onclick="sendLoginCode()">Send Code</button>
-        </div>
-      </div>
-      <div id="phoneStep2" style="display:none;">
-        <input type="text" id="loginCode" placeholder="Enter verification code" />
-        <div id="code-status"></div>
-        <div class="button_wrapper">
-          <button onclick="verifyLoginCode()">Verify</button>
-        </div>
-      </div>
-    </div>
-
-    <div id="emailLogin" class="login-method" style="display:none;">
-      <input type="email" id="loginEmail" placeholder="Email" />
+      <input type="number" id="loginphone" placeholder="Phone Number" />
       <input type="password" id="loginPassword" placeholder="Password" />
-      <div id="email-status"></div>
-      <div class="button_wrapper">
-        <button onclick="loginWithEmail()">Login</button>
+      <a href="/auth/forgot-pass">forgotten your password?</a>
+      <div class="cap-container">
+
+        <input type="text" id="captcha" required autocomplete="off" placeholder="Enter what is in the image "/>
+        
+        <img id="captcha-image" title="Click to reload captcha" alt="captcha" />
       </div>
+
+      <div id="phone-status"></div>
+      <div class="button_wrapper">
+        <button onclick="loginWithphone()">Login</button>
+      </div>
+
     </div>
 
     <div id="all-status"></div>
+    <div id="user-status"></div>
+    <div><a href="/auth/reset-password"></a></div>
   </div>
   <div><span>don't have an account? sign up here</span></div>
   <div class="button_wrapper">

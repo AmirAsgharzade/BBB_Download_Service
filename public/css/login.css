@@ -4,9 +4,9 @@ body {
   margin: 0;
   padding: 0;
 }
+#captcha-image { cursor: pointer; margin-top: 10px; }
 
 .container {
-
   width: 90%;
   max-width: 400px;
   margin: 90px auto;
@@ -62,5 +62,64 @@ span{
 
 button:hover {
   background: #2980b9;
+}
+
+.cap-container{
+  display: flex; align-items: center; gap: 10px; margin-top: 5px;
+}
+
+.cap-container > #captcha-image{
+  flex:1;
+}
+
+
+#verify {
+  max-width: 400px;
+  margin: 20px auto;
+  padding: 0 10px;
+  box-sizing: border-box;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+#code{
+  flex: 1 1 200px;
+  padding: 10px;
+  font-size: 1rem;
+  min-width: 0; /* prevent overflow in flex */  
+}
+
+#codebutton{
+  flex: 0 0 auto;
+  padding: 10px 15px;
+  font-size: 1rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+#codebutton.disabled {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+}
+
+#timerText {
+  width: 100%;
+  font-size: 0.9rem;
+  color: #333;
+  margin-top: 5px;
+  min-height: 1.2em; /* reserve space to avoid jump */
+  
+}
+
+@media (max-width: 480px) {
+  #verify {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  #codebutton {
+    width: 100%;
+  }
 }
 

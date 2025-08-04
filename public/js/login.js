@@ -1,59 +1,38 @@
-document.querySelectorAll('input[name="loginType"]').forEach(radio => {
-  radio.addEventListener('change', () => {
-    const val = document.querySelector('input[name="loginType"]:checked').value;
-    document.getElementById('phoneLogin').style.display = val === 'phone' ? 'block' : 'none';
-    document.getElementById('emailLogin').style.display = val === 'email' ? 'block' : 'none';
-    resetStatus();
-    resetPhoneLogin();
-  });
-});
+window.onload = loadCaptcha()
 
-let loginPhoneValue = '';
 
-function sendLoginCode() {
-  const phone = document.getElementById('loginPhone').value;
+
+async function loadCaptcha() {
+      const captchaImg = document.getElementById('captcha-image');
+
+
+
+
+      try {
+        const response = await fetch(`/auth/captcha`, {
+          method: 'GET',
+          credentials: 'include' // important to send cookies (session cookie)
+        });
+        if (!response.ok) {
+          throw new Error('Failed to load captcha');
+        }
+        const svgText = await response.text();
+
+        // Display SVG as image by embedding SVG XML directly
+        captchaImg.src = 'data:image/svg+xml;base64,' + btoa(svgText);
+      } catch (err) {
+        console.log("Error loading captcha:",err)
+      }
+    }
+
+
+function loginWithphone() {
+  const phoneNumber = document.getElementById('loginphone').value;
+  const password = document.getElementById('loginPassword').value;
   fetch('/auth/login/phone', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ phone })
-  })
-    .then(res => res.json())
-    .then(data => {
-      if (data.success) {
-        loginPhoneValue = phone;
-        document.getElementById('phoneStep1').style.display = 'none';
-        document.getElementById('phoneStep2').style.display = 'block';
-        resetStatus();
-      } else {
-        showError(data.error,data.type);
-      }
-    });
-}
-
-function verifyLoginCode() {
-  const code = document.getElementById('loginCode').value;
-  fetch('/auth/login/verify', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ phone: loginPhoneValue, code })
-  })
-    .then(res => res.json())
-    .then(data => {
-      if (data.success) {
-        window.location.href = '/home';
-      } else {
-        showError(data.error,data.type);
-      }
-    });
-}
-
-function loginWithEmail() {
-  const email = document.getElementById('loginEmail').value;
-  const password = document.getElementById('loginPassword').value;
-  fetch('/auth/login/email', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password })
+    body: JSON.stringify({ phoneNumber, password })
   })
     .then(res => res.json())
     .then(data => {
@@ -77,13 +56,6 @@ function resetStatus() {
       el.innerText = '';
     }}
 };
-
-function resetPhoneLogin() {
-  document.getElementById('phoneStep1').style.display = 'block';
-  document.getElementById('phoneStep2').style.display = 'none';
-  document.getElementById('loginPhone').value = '';
-  document.getElementById('loginCode').value = '';
-}
 
 function goSignUp(){
   window.location.href= '/auth/signup';

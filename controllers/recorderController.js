@@ -1,6 +1,8 @@
 const { Result } = require('pg');
 const db = require('../db');
 require('dotenv').config()
+const { v4: uuidv4 } = require('uuid');
+const path = require('path');
 
 
 const queue = require('../queue')
@@ -18,19 +20,20 @@ const recorderController ={
         const isvalid = await testUrl(link)
         if (!isvalid){
             console.log("after the url test")
-                res.status(400).json({result:false,ID:null,error:"the link is invalid please provide a valid one.",type:"link"})
+            return res.status(400).json({result:false,ID:null,error:"the link is invalid please provide a valid one.",type:"link"})
         }else{
+            const previewId = uuidv4();
 
                 await deleteFolder(screenshotsFolder)
-                await preview(link)
+                await preview(link,previewId)
                 
-                const files = fs.readdir(screenshotsFolder,(err,files) => {
+                const files = fs.readdir(path.join(screenshotsFolder,previewId),(err,files) => {
                     if (err) {
                         console.log(err)
                         return res.status(500).send({result:false,error:"couldn't read the files properly", type:"files"})
                     }
                     
-                    const imageUrls = files.map(file => `/screenshots/tmp/${file}`);
+                    const imageUrls = files.map(file => `/screenshots/tmp/${previewId}/${file}`);
                     res.json({result:true ,images:imageUrls});    
                     console.log(files)
                 })

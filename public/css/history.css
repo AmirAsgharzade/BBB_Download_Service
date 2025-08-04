@@ -4,6 +4,48 @@ body {
   margin: 0;
   padding: 0;
 }
+nav{
+  display:flex;
+  justify-content: flex-start;
+  background-color: #333;
+  padding: 10px 20px;
+}
+
+nav button{
+  background-color: #4CAF50; /* Green background */
+  border: none;
+  color: white;
+  padding: 10px 16px;
+  margin-left: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+nav button.login {
+  background-color: #008CBA; /* Blue */
+}
+
+nav button:hover {
+  background-color: #45a049;
+}
+
+nav button.logoutbtn{
+  background-color: rgb(227, 31, 31);
+}
+
+nav button.login:hover {
+  background-color: #007bb5;
+}
+nav button.logoutbtn:hover{
+  background-color: red;
+}
+.his-btn{
+  background-color: #274c81;
+}
+.his-btn:hover{
+  background-color: #267e96;
+}
 
 .container {
   width: 90%;
@@ -38,3 +80,7 @@ table {
       padding: 6px 12px;
       cursor: pointer;
     }
+
+span{
+  color:whitesmoke;
+}

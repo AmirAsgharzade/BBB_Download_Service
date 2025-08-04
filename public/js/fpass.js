@@ -29,13 +29,14 @@ async function loadCaptcha() {
     
 let phoneValue = '';
 let timerInterval;
-const countdownDuration = 3*60;
+const countdownDuration = 2*60;
 const sendCodeBtn = document.getElementById("codebutton");
 const verificationCodeInput = document.getElementById("code");
 const timerText = document.getElementById("timerText");
-function sendCode() {
+
+function sendfpCode() {
   const phone = document.getElementById('phone').value;
-  fetch('/auth/signup/phone', {
+  fetch('/auth/forgot-pass/phone', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ phone })
@@ -44,7 +45,7 @@ function sendCode() {
     .then(data => {
       if (data.success) {
         phoneValue = phone;
-        console.log(data.code)
+        console.log(data.code);
         startCountdown()
         
       } else {
@@ -76,6 +77,7 @@ function updateButtonText(seconds) {
   const formattedTime = `${mins}:${secs.toString().padStart(2, "0")}`;
 
   timerText.textContent = `Resend available in ${formattedTime}`;
+
 }function resetButton() {
 
   sendCodeBtn.disabled = false;
@@ -84,10 +86,10 @@ function updateButtonText(seconds) {
   timerText.textContent = ""; // Clear timer text when done
 }
   
-  function verifyCode() {
+  function verifyfpCode() {
     const code = document.getElementById('code').value;
     
-    fetch('/auth/signup/verify', {
+    fetch('/auth/forgot-pass/verify', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ phone: phoneValue, code })
@@ -103,17 +105,16 @@ function updateButtonText(seconds) {
     });
 }
 
-function finalSignup() {
+function resetPass() {
   const details = {
 
     phone: phoneValue,
     code:document.getElementById('code').value,
-    firstName: document.getElementById('firstName').value,
-    lastName: document.getElementById('lastName').value,
-    password: document.getElementById('password').value
+    password: document.getElementById('password').value,
+    conf_password: document.getElementById('conf_password').value,
   };
 
-  fetch('/auth/signup/details', {
+  fetch('/auth/forgot-pass/resetPassword', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(details)

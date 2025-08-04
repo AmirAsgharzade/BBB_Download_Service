@@ -34,6 +34,7 @@ function loadData() {
       return res.json();
     })
     .then(data => {
+      document.getElementById('userName').innerText = `${data.user}`;
       total = data.total;
       populateTable(data.data);
       updatePagination();
@@ -80,4 +81,9 @@ function nextPage() {
     currentPage++;
     loadData();
   }
+}
+
+
+function goHome() {
+  window.location.href = '/home';
 }

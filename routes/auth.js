@@ -14,14 +14,17 @@ router.post('/signup/verify', authController.verifyCode);
 router.post('/signup/details', authController.completeSignup);
 
 // Login routes
-router.post('/login/phone', authController.sendLoginCode);
-router.post('/login/verify', authController.verifyLoginCode);
-router.post('/login/email', authController.loginWithEmail);
+router.post('/login/phone', authController.login);
 
+router.get('/captcha',authController.captcha)
 
 router.get('/check-auth', authenticateJWT, (req, res) => {
   res.json({ id: req.user.id, name: req.user.name });
 });
+
+router.post('/forgot-pass/phone',authController.sendfpVerificationCode);
+router.post('/forgot-pass/verify',authController.verifyfpCode)
+router.post('/forgot-pass/resetPassword',authController.resetPassword)
 
 // Logout route
 router.post('/logout', (req, res) => {

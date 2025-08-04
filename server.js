@@ -4,6 +4,7 @@ const express = require('express')
 const cookieParser = require('cookie-parser')
 const {processURLQueue} = require('./jobs/background')
 const path = require('path')
+const session = require('express-session')
 
 const app = express();
 port = 3000;
@@ -16,6 +17,20 @@ app.use(cookieParser())
 
 // serving static files
 app.use(express.static(path.join(__dirname,'public')))
+app.use('/public/screenshots',express.static(path.join(__dirname,'public','screenshots')))
+app.use(session({
+  name: 'sid', // custom session cookie name
+  secret: process.env.SESSION_SECRET || 'replace-with-a-secure-secret',
+  resave: false,
+  saveUninitialized: false, // only create session when needed
+  cookie: {
+    httpOnly: true,       // not accessible by JS
+    secure: true,         // send cookie only over HTTPS (set false for local dev without HTTPS)
+    sameSite: 'strict',   // strict CSRF protection
+    maxAge: 5 * 60 * 1000 // 5 minutes expiry
+  }
+}));
+
 
 
 
@@ -33,6 +48,7 @@ app.get('/auth/signup', (req, res) => res.sendFile(path.join(__dirname, 'views/s
 app.get('/auth/login', (req, res) => res.sendFile(path.join(__dirname, 'views/login.html')));
 app.get('/home',(req,res) => res.sendFile(path.join(__dirname,'views/home.html')));
 app.get('/user/history', (req, res) => res.sendFile(path.join(__dirname, 'views/history.html')));
+app.get('/auth/forgot-pass',(req,res)=>{ res.sendFile(path.join(__dirname,'views/fpass.html'))})
 
 
 // // running the app
