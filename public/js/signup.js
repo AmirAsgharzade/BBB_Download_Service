@@ -106,11 +106,12 @@ function updateButtonText(seconds) {
 function finalSignup() {
   const details = {
 
-    phone: phoneValue,
+    phone: document.getElementById('phone').value,
     code:document.getElementById('code').value,
     firstName: document.getElementById('firstName').value,
     lastName: document.getElementById('lastName').value,
-    password: document.getElementById('password').value
+    password: document.getElementById('password').value,
+    captcha: document.getElementById('captcha').value,
   };
 
   fetch('/auth/signup/details', {
@@ -123,6 +124,8 @@ function finalSignup() {
       if (data.success) {
         window.location.href = '/auth/login'; // or /login.html
       } else {
+        console.log(details)
+        loadCaptcha()
         showError(data.error,data.type);
       }
     });

@@ -25,6 +25,7 @@ const authController = {
     background: '#cc9966',
   });
   req.session.captcha = captcha.text;
+  console.log('Captcha stored in session:', req.session.captcha);
   req.session.captchaCreatedAt = Date.now();
 
   res.type('svg');
@@ -72,13 +73,17 @@ const authController = {
   },
 
   completeSignup: async (req, res) => {
-    const { phone,code, firstName, lastName, password } = req.body;
-
-    if (!phone || !firstName || !lastName || !password || !verificationCodes.get(phone) || !code) {
+    const { phone,code, firstName, lastName, password,captcha } = req.body;
+    
+    if (!phone || !firstName || !lastName || !password || !code || !captcha) {
+      console.log(phone,code,firstName,lastName,password,captcha)
       return res.status(400).json({ error: 'All fields are required',type:"all" });
     }
     
-    
+    if (req.session.captcha !== captcha){
+      console.log(req.session,captcha,req.session.captcha)
+      return res.status(400).json({error:"Enter the captcha please",type:"captcha"})
+    }
     const phoneResult = await db.query('SELECT 1 FROM users WHERE phone = $1', [phone]);
     if (phoneResult.rows.length > 0) {
       return res.status(400).json({ error: 'phoneNumber already exists.',type:'phone'});
@@ -111,10 +116,13 @@ const authController = {
   // Login part
 
   login: async (req, res) => {
-    const { phoneNumber, password } = req.body;
-    if (!phoneNumber || !password) return res.status(400).json({ error: 'Phone number and password are required' ,type:'all'});
+    const { phoneNumber, password,captcha } = req.body;
+    if (!phoneNumber || !password || !captcha) return res.status(400).json({ error: 'All fields are required' ,type:'all'});
     
-    
+    if(req.session.captcha !== captcha){
+      console.log(req.session.captcha)
+      return res.status(400).json({error:'Captcha is required please enter it',type:'captcha'})
+    }
     
     try {
       const userResult = await db.query('SELECT id, first_name, last_name ,password_hash FROM users WHERE phone=$1', [phoneNumber]);
@@ -178,13 +186,16 @@ const authController = {
   },
 
   resetPassword: async (req,res) => {
-    const {phone,code,password,conf_password} = req.body;
+    const {phone,code,password,conf_password,captcha} = req.body;
 
-     if (!phone || !code || !password || !conf_password) {
+     if (!phone || !code || !password || !conf_password || !captcha) {
       return res.status(400).json({ error: 'All fields are required',type:"all" });
     }
     
-    
+    if (req.session.captcha !== captcha){
+      return res.status(400).json({error:'Please enter the captcha properly',type:"captcha"})
+    }
+
     const phoneResult = await db.query('SELECT 1 FROM users WHERE phone = $1', [phone]);
     if (phoneResult.rows.length === 0) {
       return res.status(400).json({ error: 'phoneNumber does not exist exists.',type:'phone'});

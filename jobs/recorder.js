@@ -296,22 +296,29 @@ function startRecording() {
     // Linux: Change display and audio device accordingly
 
     ffmpegArgs = [
-      '-y',
-      '-f', 'x11grab', // for linux video device recording
-      '-s', '1920x1080',  // screen resolution - adjust to your screen
-      '-framerate', '30',
-      '-i', ':0.0',
-      '-f', 'pulse', // for linux audio device recording
-      '-i', 'default',
-      '-c:v', 'libx264',
-      '-profile:v', 'baseline',
-      '-level', '3.0',
-      '-pix_fmt', 'yuv420p',
-      '-preset', 'fast',
-      '-r', '30',
-      '-c:a', 'aac',
-      '-b:a', '192k',
-      '-movflags', '+faststart',
+     '-thread_queue_size', '512',
+  '-f', 'x11grab',
+  '-framerate', '30',
+  '-video_size', '1920x1080',
+  '-i', ':99.0',
+
+  '-thread_queue_size', '512',
+  '-f', 'pulse',
+  '-ar', '44100',
+  '-i', 'VirtualSink.monitor',
+
+  '-map', '0:v:0',
+  '-map', '1:a:0',
+  '-async', '1',
+  '-vsync', '1',
+  '-fflags', '+genpts',
+  '-start_at_zero',
+
+  '-c:v', 'libx264',
+  '-preset', 'veryfast',
+  '-crf', '23',
+  '-c:a', 'aac',
+  '-b:a', '128k',
       outputFile,
     ];
   } else {

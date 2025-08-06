@@ -112,6 +112,7 @@ function resetPass() {
     code:document.getElementById('code').value,
     password: document.getElementById('password').value,
     conf_password: document.getElementById('conf_password').value,
+    captcha:document.getElementById('captcha').value
   };
 
   fetch('/auth/forgot-pass/resetPassword', {

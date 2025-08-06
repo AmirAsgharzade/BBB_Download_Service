@@ -22,10 +22,10 @@ app.use(session({
   name: 'sid', // custom session cookie name
   secret: process.env.SESSION_SECRET || 'replace-with-a-secure-secret',
   resave: false,
-  saveUninitialized: false, // only create session when needed
+  saveUninitialized: true, // only create session when needed
   cookie: {
     httpOnly: true,       // not accessible by JS
-    secure: true,         // send cookie only over HTTPS (set false for local dev without HTTPS)
+    secure: false,         // send cookie only over HTTPS (set false for local dev without HTTPS)
     sameSite: 'strict',   // strict CSRF protection
     maxAge: 5 * 60 * 1000 // 5 minutes expiry
   }

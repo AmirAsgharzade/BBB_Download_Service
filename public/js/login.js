@@ -1,3 +1,5 @@
+
+
 window.onload = loadCaptcha()
 
 
@@ -29,16 +31,18 @@ async function loadCaptcha() {
 function loginWithphone() {
   const phoneNumber = document.getElementById('loginphone').value;
   const password = document.getElementById('loginPassword').value;
+  const captcha = document.getElementById('captcha').value
   fetch('/auth/login/phone', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ phoneNumber, password })
+    body: JSON.stringify({ phoneNumber, password,captcha })
   })
     .then(res => res.json())
     .then(data => {
       if (data.success) {
         window.location.href = '/home';
       } else {
+        loadCaptcha()
         showError(data.error,data.type);
       }
     });
