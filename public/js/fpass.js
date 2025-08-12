@@ -45,7 +45,7 @@ function sendfpCode() {
     .then(data => {
       if (data.success) {
         phoneValue = phone;
-        console.log(data.code);
+//        console.log(data.code);
         startCountdown()
         
       } else {

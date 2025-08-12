@@ -1,3 +1,5 @@
 .env
 node_modules/
 prompts
+videos/*
+jobs/^bbb.*

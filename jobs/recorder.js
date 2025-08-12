@@ -35,21 +35,28 @@ async function testUrl(link){
   
   try{
   browser = await puppeteer.launch({
+    
     headless: true,
-    defaultViewport:null,
-    args: [
-      '--no-sandbox',
-      '--use-fake-ui-for-media-stream',
-      '--autoplay-policy=no-user-gesture-required',
-      '--disable-gpu',
-      '--disable-software-rasterizer',
-      '--disable-accelerated-2d-canvas',
-      '--disable-accelerated-video-decode',
-      '--disable-accelerated-video-encode',
-      '--disable-gpu-rasterization',
-      '--disable-gl-drawing-for-tests',
-      '--start-fullscreen',
-    ],
+    executablePath:'/usr/bin/chromium-browser',
+    dumpio: true,
+    defaultViewport:{
+	width: 1280,
+    height: 720,
+    }, 
+	args: [
+	'--no-sandbox',              // necessary for many CI or restricted envs
+    '--disable-setuid-sandbox', // usually paired with --no-sandbox
+    '--disable-dev-shm-usage',  // overcome limited /dev/shm space
+    '--disable-gpu',            // often recommended in headless
+    '--window-size=1280,720',   // optional but good for consistent viewport
+    '--autoplay-policy=no-user-gesture-required', // for media playback with pulseaudio
+    '--enable-features=NetworkService,NetworkServiceInProcess' // improve stability sometimes
+	
+	],
+
+    env:{
+    	DISPLAY: ':99'
+    }
   });
   
       
@@ -111,7 +118,27 @@ async function preview(link,id){
   await fs.mkdir(path.join(screenshotsFolder,id),{recursive:true})
   
   
-  const browser = await puppeteer.launch({ headless: true });
+  const browser = await puppeteer.launch({ 
+	  headless: true, 
+	executablePath:'/usr/bin/chromium-browser',
+	args: [
+     '--no-sandbox',              // necessary for many CI or restricted envs
+    '--disable-setuid-sandbox', // usually paired with --no-sandbox
+    '--disable-dev-shm-usage',  // overcome limited /dev/shm space
+    '--disable-gpu',            // often recommended in headless
+    '--window-size=1280,720',   // optional but good for consistent viewport
+    '--autoplay-policy=no-user-gesture-required', // for media playback with pulseaudio
+    '--enable-features=NetworkService,NetworkServiceInProcess' // improve stability sometimes
+	],
+
+
+	  env:{
+		  
+		DISPLAY: ':99',
+	  }
+ 
+
+  });
   const page = await browser.newPage();
 
   const bbbUrl = link;
@@ -154,7 +181,7 @@ async function preview(link,id){
     
     // Wait for the video to seek and frame to update
     // await page.waitForTimeout(1000);
-    await new Promise(resolve => setTimeout(resolve, 10000));
+    await new Promise(resolve => setTimeout(resolve, 15000));
 
     // Take screenshot of video element
     
@@ -190,20 +217,23 @@ async function startBBBRecording(link) {
   try{
   const browser = await puppeteer.launch({
     headless: false,
+    executablePath:'/usr/bin/chromium-browser',
     defaultViewport: null,
     args: [
-      '--no-sandbox',
-      '--use-fake-ui-for-media-stream',
-      '--autoplay-policy=no-user-gesture-required',
-      '--disable-gpu',
-      '--disable-software-rasterizer',
-      '--disable-accelerated-2d-canvas',
-      '--disable-accelerated-video-decode',
-      '--disable-accelerated-video-encode',
-      '--disable-gpu-rasterization',
-      '--disable-gl-drawing-for-tests',
-      '--start-fullscreen',
+    '--no-sandbox',              // necessary for many CI or restricted envs
+    '--disable-setuid-sandbox', // usually paired with --no-sandbox
+    '--disable-dev-shm-usage',  // overcome limited /dev/shm space
+    '--disable-gpu',            // often recommended in headless
+    '--window-size=1280,720',   // optional but good for consistent viewport
+    '--autoplay-policy=no-user-gesture-required', // for media playback with pulseaudio
+    '--enable-features=NetworkService,NetworkServiceInProcess' // improve stability sometimes     
     ],
+	  
+
+	  env:{
+		DISPLAY: ':99',
+	  }
+
   });
 
 
@@ -240,13 +270,14 @@ async function startBBBRecording(link) {
   console.log('Recording started. Join the BBB session and interact!');
 
   //timeout delta time variable instead of 15000 should be here
-  await new Promise(resolve => setTimeout(resolve, 15000)); // this is for the recording to continue until the end of the video
+  await new Promise(resolve => setTimeout(resolve, 65000)); // this is for the recording to continue until the end of the video
 
 
   console.log('Stopping recording...');
   // Stop the ffmpeg process gracefully
-  ffmpegProcess.stdin.write('q');
-
+//  ffmpegProcess.stdin.write('q');
+//	ffmpegProcess.kill();
+	process.kill(-ffmpegProcess.pid,'SIGINT');
   // wait for the recording the end completely
   await new Promise(resolve => setTimeout(resolve,15000))
 
@@ -262,14 +293,16 @@ async function startBBBRecording(link) {
 }
 
 function startRecording() {
-  const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+  	process.env.DISPLAY=':99'
+
+   const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
   // change this to where the destination of the files should be and what the name of the file should be
-  const outputFile = path.resolve(__dirname, `bbb_recording_${timestamp}.mp4`);
+  const outputFile = path.resolve('videos/', `bbb_recording_${timestamp}.mp4`);
 
   const platform = os.platform();
 
   let ffmpegArgs;
-
+  let ffmpegArgs2;
   if (platform === 'win32') {
     
     // Run 'ffmpeg -list_devices true -f dshow -i dummy' to find audio device names
@@ -299,13 +332,13 @@ function startRecording() {
      '-thread_queue_size', '512',
   '-f', 'x11grab',
   '-framerate', '30',
-  '-video_size', '1920x1080',
+  '-video_size', '1280x720',
   '-i', ':99.0',
 
   '-thread_queue_size', '512',
   '-f', 'pulse',
   '-ar', '44100',
-  '-i', 'VirtualSink.monitor',
+  '-i', 'virtual_sink.monitor',
 
   '-map', '0:v:0',
   '-map', '1:a:0',
@@ -321,14 +354,44 @@ function startRecording() {
   '-b:a', '128k',
       outputFile,
     ];
+ ffmpegArgs2 = [
+  '-thread_queue_size', '1024',
+  '-rtbufsize', '100M',
+  '-f', 'x11grab',
+  '-framerate', '30',
+  '-video_size', '1280x720',
+  '-i', ':99.0',
+  '-thread_queue_size', '1024',
+  '-f', 'pulse',
+  '-ar', '44100',
+  '-i', 'virtual_sink.monitor',
+  '-map', '0:v:0',
+  '-map', '1:a:0',
+  '-c:v', 'libx264',
+  '-preset', 'veryfast',
+  '-crf', '23',
+  '-pix_fmt', 'yuv420p',
+  '-flags', '+cgop',
+  '-c:a', 'aac',
+  '-b:a', '128k',
+  '-filter_complex', 'aresample=async=1',
+  '-vsync', 'vfr',
+  '-use_wallclock_as_timestamps', '1',
+  '-movflags', '+faststart',
+  '-max_muxing_queue_size', '1024',
+  '-fflags', '+genpts',
+  '-start_at_zero',
+  
+	outputFile,
+];
   } else {
     throw new Error('Unsupported OS platform for recording');
   }
 
-  console.log('Running ffmpeg with args:', ffmpegArgs.join(' '));
+  console.log('Running ffmpeg with args:', ffmpegArgs2.join(' '));
 
   // creating an ffmpeg object for recording
-  const ffmpeg = spawn('ffmpeg', ffmpegArgs, { stdio: ['pipe', 'pipe', 'pipe'] });
+  const ffmpeg = spawn('ffmpeg', ffmpegArgs2, { stdio: ['pipe', 'pipe', 'pipe'],detached:true });
 
   // closing the ffmpeg recording gracefully
   ffmpeg.on('exit', (code, signal) => {

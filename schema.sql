@@ -1,5 +1,5 @@
 
--- CREATE SCHEMA bbb_schema AUTHORIZATION bbb_user;
+CREATE SCHEMA bbb_schema AUTHORIZATION bbb_user;
 DROP TABLE IF EXISTS users CASCADE;
 DROP TABLE IF EXISTS user_links CASCADE;
 -- USERS TABLE
@@ -12,7 +12,7 @@ CREATE TABLE users (
   status VARCHAR(20) NOT NULL DEFAULT 'active', -- e.g. active, inactive, etc.
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
-  verification_code VARCHAR(20) NOT NULL;
+  verification_code VARCHAR(20) NOT NULL
 );
 
 -- USER LINKS TABLE (history of links sent)

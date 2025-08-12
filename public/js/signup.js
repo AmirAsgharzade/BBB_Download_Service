@@ -37,6 +37,8 @@ function sendCode() {
   const phone = document.getElementById('phone').value;
   fetch('/auth/signup/phone', {
     method: 'POST',
+
+    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ phone })
   })
@@ -44,7 +46,7 @@ function sendCode() {
     .then(data => {
       if (data.success) {
         phoneValue = phone;
-        console.log(data.code)
+//        console.log(data.code)
         startCountdown()
         
       } else {

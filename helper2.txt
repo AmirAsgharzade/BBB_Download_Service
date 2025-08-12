@@ -1,0 +1,17 @@
+ffmpeg \
+  -thread_queue_size 1024 \
+  -rtbufsize 100M \
+  -f x11grab -framerate 30 -video_size 1920x1080 -i :99.0 \
+  -thread_queue_size 1024 \
+  -f pulse -ar 44100 -i VirtualSink.monitor \
+  -map 0:v:0 -map 1:a:0 \
+  -c:v libx264 -preset veryfast -crf 23 -pix_fmt yuv420p -flags +cgop \
+  -c:a aac -b:a 128k \
+  -filter_complex aresample=async=1 \
+  -vsync vfr \
+  -use_wallclock_as_timestamps 1 \
+  -movflags +faststart \
+  -max_muxing_queue_size 1024 \
+  -fflags +genpts -start_at_zero \
+  output.mkv
+

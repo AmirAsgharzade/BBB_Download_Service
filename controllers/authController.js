@@ -1,7 +1,7 @@
 require('dotenv').config()
 const bcrypt = require('bcrypt');
 const db = require('../db');
-const { sendVerificationCode } = require('../utils/smsSender');
+const { sendVerificationCode,sendfpVerificationCode } = require('../utils/smsSender');
 const svgCaptcha = require('svg-captcha');
 
 const jwt = require('jsonwebtoken');
@@ -50,7 +50,7 @@ const authController = {
 
     await sendVerificationCode(phone, code);
 
-    res.json({ success: true,code:code });
+    res.json({ success: true });
   },
 
   verifyCode: (req, res) => {
@@ -81,7 +81,7 @@ const authController = {
     }
     
     if (req.session.captcha !== captcha){
-      console.log(req.session,captcha,req.session.captcha)
+      console.log(req.session.captcha,captcha)
       return res.status(400).json({error:"Enter the captcha please",type:"captcha"})
     }
     const phoneResult = await db.query('SELECT 1 FROM users WHERE phone = $1', [phone]);
@@ -157,9 +157,9 @@ const authController = {
 
     verificationfpCodes.set(phone, {code,expiresAt});
 
-    await sendVerificationCode(phone, code);
+    await sendfpVerificationCode(phone, code);
 
-    return res.status(200).json({success:true,code:code})
+    return res.status(200).json({success:true})
 
   },
   

@@ -6,15 +6,18 @@ const {processURLQueue} = require('./jobs/background')
 const path = require('path')
 const session = require('express-session')
 
+const cors = require('cors');
+
 const app = express();
-port = 3000;
+const PORT = process.env.PORT;
+const IP = process.env.IP;
 
 
 // making sure the app can take all kinds of data and has a cookie parser
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
-app.use(cookieParser())
-
+app.use(cookieParser());
+app.set('trust proxy',1);
 // serving static files
 app.use(express.static(path.join(__dirname,'public')))
 app.use('/public/screenshots',express.static(path.join(__dirname,'public','screenshots')))
@@ -22,10 +25,10 @@ app.use(session({
   name: 'sid', // custom session cookie name
   secret: process.env.SESSION_SECRET || 'replace-with-a-secure-secret',
   resave: false,
-  saveUninitialized: true, // only create session when needed
+  saveUninitialized:false, // only create session when needed
   cookie: {
     httpOnly: true,       // not accessible by JS
-    secure: false,         // send cookie only over HTTPS (set false for local dev without HTTPS)
+    secure: true,         // send cookie only over HTTPS (set false for local dev without HTTPS)
     sameSite: 'strict',   // strict CSRF protection
     maxAge: 5 * 60 * 1000 // 5 minutes expiry
   }
@@ -51,10 +54,14 @@ app.get('/user/history', (req, res) => res.sendFile(path.join(__dirname, 'views/
 app.get('/auth/forgot-pass',(req,res)=>{ res.sendFile(path.join(__dirname,'views/fpass.html'))})
 
 
+app.get('/',(req,res) => { res.redirect('/home');})
+
 // // running the app
-app.listen(port, ()=>{
-    console.log(`Server running at http://localhost:${port}`);
+const server = app.listen(PORT, ()=>{
+    console.log(`Server running at http://${IP}:${PORT}`);
 
     processURLQueue()
 });
+
+server.setTimeout(5*60*1000);
 
