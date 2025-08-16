@@ -7,6 +7,7 @@ const path = require('path')
 const session = require('express-session')
 
 const cors = require('cors');
+const { deleteOldFiles } = require('./jobs/recorder')
 
 const app = express();
 const PORT = process.env.PORT;
@@ -28,7 +29,7 @@ app.use(session({
   saveUninitialized:false, // only create session when needed
   cookie: {
     httpOnly: true,       // not accessible by JS
-    secure: true,         // send cookie only over HTTPS (set false for local dev without HTTPS)
+    secure: false,         // send cookie only over HTTPS (set false for local dev without HTTPS)
     sameSite: 'strict',   // strict CSRF protection
     maxAge: 5 * 60 * 1000 // 5 minutes expiry
   }
@@ -60,7 +61,9 @@ app.get('/',(req,res) => { res.redirect('/home');})
 const server = app.listen(PORT, ()=>{
     console.log(`Server running at http://${IP}:${PORT}`);
 
-    processURLQueue()
+    processURLQueue();
+    deleteOldFiles();
+    setInterval(deleteOldFiles,24*60*60*1000)
 });
 
 server.setTimeout(5*60*1000);

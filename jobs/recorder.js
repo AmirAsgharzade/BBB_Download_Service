@@ -7,6 +7,11 @@ require('dotenv').config()
 const fs = require('fs').promises;
 const fsSync = require('fs');
 const { MAX } = require('uuid');
+const db = require('../db')
+
+
+const VIDEOS_DIR = process.env.VIDEOS_DIR;
+const MAX_FILE_AGE_DAYS = process.env.MAX_FILE_AGE_DAYS;
 
 const screenshotsDir = process.env.PREVIEW_FOLDER;
 const MAX_AGE_MS = process.env.MAX_AGE_MS;
@@ -120,7 +125,7 @@ async function preview(link,id){
   
   const browser = await puppeteer.launch({ 
 	  headless: true, 
-	executablePath:'/usr/bin/chromium-browser',
+	  executablePath:'/usr/bin/chromium-browser',
 	args: [
      '--no-sandbox',              // necessary for many CI or restricted envs
     '--disable-setuid-sandbox', // usually paired with --no-sandbox
@@ -211,7 +216,7 @@ async function preview(link,id){
 
 
 // screen recording with this
-async function startBBBRecording(link) {
+async function startBBBRecording(link,linkid,name) {
   
   // Launch puppeteer browser (Chromium)
   try{
@@ -265,7 +270,7 @@ async function startBBBRecording(link) {
 
 
   // Start ffmpeg recording process
-  const ffmpegProcess = startRecording();
+  const ffmpegProcess = startRecording(linkid,name);
 
   console.log('Recording started. Join the BBB session and interact!');
 
@@ -292,12 +297,12 @@ async function startBBBRecording(link) {
   }
 }
 
-function startRecording() {
+function startRecording(linkid,name) {
   	process.env.DISPLAY=':99'
 
    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
   // change this to where the destination of the files should be and what the name of the file should be
-  const outputFile = path.resolve('videos/', `bbb_recording_${timestamp}.mp4`);
+  const outputFile = path.resolve('videos/', `${name}.mp4`);
 
   const platform = os.platform();
 
@@ -394,12 +399,56 @@ function startRecording() {
   const ffmpeg = spawn('ffmpeg', ffmpegArgs2, { stdio: ['pipe', 'pipe', 'pipe'],detached:true });
 
   // closing the ffmpeg recording gracefully
-  ffmpeg.on('exit', (code, signal) => {
+  ffmpeg.on('exit', async (code, signal) => {
     console.log(`ffmpeg exited with code ${code} and signal ${signal}`);
-  });
+    try{
+
+      if(code === 0){
+        await db.query("UPDATE user_links SET status = $1 WHERE id = $2",["processed",linkid]);  
+        console.log("saved in database")  
+      }else{
+        console.log("the database didn't save it properly something happened with the video")
+      }
+      
+    }catch(err){
+    console.log("this is the db error:",err)
+  }
+});
 
   // returning the ffmpeg object accordingly
   return ffmpeg;
 }
+function deleteOldFiles() {
+  fs.readdir(VIDEOS_DIR, (err, files) => {
+    if (err) {
+      return console.error('Error reading videos directory:', err);
+    }
+
+    const now = Date.now();
+    const maxAgeMs = MAX_FILE_AGE_DAYS * 24 * 60 * 60 * 1000;
+
+    files.forEach((file) => {
+      const filePath = path.join(VIDEOS_DIR, file);
+
+      fs.stat(filePath, (err, stats) => {
+        if (err) {
+          return console.error('Error stating file:', err);
+        }
+
+        const fileAge = now - stats.mtimeMs; // modified time in ms
+
+        if (fileAge > maxAgeMs) {
+          fs.unlink(filePath, (err) => {
+            if (err) {
+              console.error('Error deleting file:', err);
+            } else {
+              console.log(`Deleted old file: ${file}`);
+            }
+          });
+        }
+      });
+    });
+  });
+}
 // exporting the recorder to be used by the server
-module.exports = {startBBBRecording,testUrl,preview,screenshotsDir,deleteFolder};
+module.exports = {startBBBRecording,testUrl,preview,screenshotsDir,deleteFolder,deleteOldFiles};

@@ -27,6 +27,9 @@ async function loadCaptcha() {
       }
     }
 
+function reloadCaptcha(){
+  loadCaptcha()
+}
 
 function loginWithphone() {
   const phoneNumber = document.getElementById('loginphone').value;

@@ -23,7 +23,7 @@ CREATE TABLE user_links (
      ON UPDATE CASCADE,
   link TEXT NOT NULL,
   status VARCHAR(50) NOT NULL DEFAULT 'in queue',
-  download_url TEXT DEFAULT NULL,
+  video_id UUID DEFAULT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 

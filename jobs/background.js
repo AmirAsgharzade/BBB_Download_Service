@@ -29,16 +29,17 @@ const processURLQueue = async () =>{
         
     const linkid = queue.peek();
     if (linkid !== null){
-        const result = await db.query("SELECT link FROM user_links WHERE id=$1", [linkid])
+        const result = await db.query("SELECT link,video_id FROM user_links WHERE id=$1", [linkid])
         if (result.rows.length == 0){
             console.log("link does not exist")
         }
         else{
             const link = result.rows[0].link;
+            const videoId = result.rows[0].video_id
             console.log('proccessing the link...');
             await db.query("UPDATE user_links SET status = $1 WHERE id = $2",["processing",linkid]);
-            await startBBBRecording(link);
-            await db.query("UPDATE user_links SET status = $1 WHERE id = $2",["processed",linkid]);                
+            await startBBBRecording(link,linkid,videoId);
+              
             console.log("link is processed now")
             queue.dequeue()
 		console.log(queue);

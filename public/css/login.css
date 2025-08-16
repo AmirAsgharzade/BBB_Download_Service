@@ -1,15 +1,31 @@
+@font-face {
+  font-family: 'Vazirmatn';
+  src: url('/fonts/Vazirmatn-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+*{
+  font-family: 'Vazirmatn', sans-serif;
+  direction: rtl;
+
+}
+
+
 body {
-  font-family: Arial, sans-serif;
+  direction: rtl;
+  font-family: 'Vazirmatn', sans-serif;
   background-color: #f5f6fa;
   margin: 0;
   padding: 0;
 }
-#captcha-image { cursor: pointer; margin-top: 10px; }
+/* #captcha-image { cursor: pointer; margin-top: 10px; } */
 
-.container {
+.form-container {
   width: 90%;
   max-width: 400px;
-  margin: 90px auto;
+  margin: 40px auto;
   padding: 30px;
   background: white;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
@@ -66,12 +82,29 @@ button:hover {
 
 .cap-container{
   display: flex; align-items: center; gap: 10px; margin-top: 5px;
+  justify-content: cneter;
 }
 
 .cap-container > #captcha-image{
-  flex:1;
+  flex:2;
+  width: 140px;  /* or any size that fits your layout */
+  height: auto;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  
 }
-
+#reloadcaptcha{
+  display: flex;
+  justify-content: center; /* horizontal center */
+  align-items: center;     /* vertical center */
+  padding: 10px;           /* adjust padding as needed */
+  cursor: pointer;
+}
+#reloadcaptcha img {
+  max-width: 100%;   /* scale image properly */
+  height: auto;
+  display: block;
+}
 
 #verify {
   max-width: 400px;
@@ -88,6 +121,12 @@ button:hover {
   padding: 10px;
   font-size: 1rem;
   min-width: 0; /* prevent overflow in flex */  
+}
+
+#code.disabled{
+ background-color: #ccc;
+  color: #666;
+  cursor: not-allowed; 
 }
 
 #codebutton{

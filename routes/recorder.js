@@ -11,5 +11,5 @@ router.post('/get-recorded-file',authenticateJWT,recorderController.getRecordedF
 router.delete('/delete-recorded-file',authenticateJWT,recorderController.deleteRecordedFile)
 router.post('/get-proccess-status',authenticateJWT,recorderController.getProcessStatus)
 router.post('/Preview',recorderController.previewVideo)
-
+router.post('/testUrl',recorderController.testingUrl)
 module.exports = router

@@ -1,8 +1,41 @@
+function toSolarDateTime(adDateTime) {
+  const date = new Date(adDateTime);
+
+  // Format Persian Solar Hijri date
+  const dateFormatter = new Intl.DateTimeFormat('fa-IR-u-ca-persian', {
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+    numberingSystem: 'latn',
+  });
+
+  // Format time (24-hour format)
+  const timeFormatter = new Intl.DateTimeFormat('fa-IR', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+    numberingSystem: 'latn',
+  });
+
+  const solarDate = dateFormatter.format(date);
+  const time = timeFormatter.format(date);
+
+  return `${solarDate} ${time}`;
+}
+
+
+
+
 let currentPage = 1;
 const limit = 10;
 let sortBy = 'created_at';
 let order = 'desc';
 let total = 0;
+
+
+
+
 
 document.addEventListener('DOMContentLoaded', () => {
   loadData();
@@ -47,14 +80,26 @@ function populateTable(rows) {
   tbody.innerHTML = '';
 
   rows.forEach(row => {
+    console.log(row)
     const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${row.id}</td>
-      <td><a href="${row.link}">${row.link}</a></td>
-      <td>${new Date(row.created_at).toLocaleString()}</td>
-      <td><a href="${row.download_url}">${row.download_url}</a></td>
-      <td>${row.status}</td>
-    `;
+    if (row.download_url === null){
+
+      tr.innerHTML = `
+        <td style="text-align: right;">${row.id}</td>
+        <td style="text-align: right;"><a href="${row.link}"><img src='/icons/link.png' alt='the link'></a></td>
+        <td style="text-align: right;">${toSolarDateTime(new Date(row.created_at).toLocaleString())}</td>
+        <td style="text-align: right;">لینک اماده نیست</td>
+        <td style="text-align: right;">${row.status}</td>
+      `;
+    }else{
+      tr.innerHTML = `
+        <td style="text-align: right;">${row.id}</td>
+        <td style="text-align: right;"><a href="${row.link}"><img src='/icons/link.png' alt='the link'></a></td>
+        <td style="text-align: right;">${toSolarDateTime(new Date(row.created_at).toLocaleString())}</td>
+        <td style="text-align: right;"><a href="${row.download_url}"><img src='/icons/download.png'></a></td>
+        <td style="text-align: right;">${row.status}</td>
+      `;
+    }
     tbody.appendChild(tr);
   });
 }
@@ -83,6 +128,12 @@ function nextPage() {
   }
 }
 
+function logout() {
+  fetch('/auth/logout', { method: 'POST', credentials: 'include' })
+    .then(() => {
+      window.location.href = '/auth/login';
+    });
+}
 
 function goHome() {
   window.location.href = '/home';

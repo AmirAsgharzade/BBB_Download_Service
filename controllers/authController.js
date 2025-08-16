@@ -36,21 +36,27 @@ const authController = {
   },
 
   sendVerificationCodes: async (req, res) => {
-    const { phone } = req.body;
+    const { phone,captcha } = req.body;
     const phoneResult = await db.query('SELECT 1 FROM users WHERE phone = $1', [phone]);
     if (phoneResult.rows.length > 0) {
-      return res.status(400).json({ error: 'Phone number already exists.' ,type:'phone'});
+      return res.status(400).json({ error: 'شماره تلفن تکراری است' ,type:'phone'});
     }
-    if (!phone) return res.status(400).json({ error: 'Phone is required',type:'phone' });
+    if (!phone) return res.status(400).json({ error: 'شماره تلفن لازم است',type:'phone' });
+    if (!captcha) return res.status(400).json({error:"کد درون عکس لازم است",type:"captcha"})
+    if (req.session.captcha !== captcha){
+      console.log(req.session.captcha,captcha)
+      return res.status(400).json({error:"کد درون عکس را اشتباه وارد کرده اید",type:"captcha"})
+    } 
+    
 
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     const expiresAt = Date.now() + codeExpiration;
 
     verificationCodes.set(phone, {code,expiresAt});
 
-    await sendVerificationCode(phone, code);
+    //await sendVerificationCode(phone, code);
 
-    res.json({ success: true });
+    res.json({ success: true,code:code });
   },
 
   verifyCode: (req, res) => {
@@ -58,12 +64,12 @@ const authController = {
     const data = verificationCodes.get(phone);
 
     if (!data || data.code !== code) {
-      return res.status(400).json({ error: 'Invalid or expired code' ,type:"code"});
+      return res.status(400).json({ error: 'کد فرستاده شده اشتباه یا منقضی شده است دوباره تلاش کنید' ,type:"code"});
     }
 
     if (Date.now() > data.expiresAt){
         verificationCodes.delete(phone)
-        return res.status(400).json({ error: 'Code expired' ,type:"code"});
+        return res.status(400).json({ error: 'کد فرستاده شده منقضی شده است' ,type:"code"});
     }
 
 
@@ -77,22 +83,22 @@ const authController = {
     
     if (!phone || !firstName || !lastName || !password || !code || !captcha) {
       console.log(phone,code,firstName,lastName,password,captcha)
-      return res.status(400).json({ error: 'All fields are required',type:"all" });
+      return res.status(400).json({ error: 'تمامی زمینه ها لازم هستند',type:"all" });
     }
     
     if (req.session.captcha !== captcha){
       console.log(req.session.captcha,captcha)
-      return res.status(400).json({error:"Enter the captcha please",type:"captcha"})
+      return res.status(400).json({error:"کد درون عکس را صحیح وارد نمایید",type:"captcha"})
     }
     const phoneResult = await db.query('SELECT 1 FROM users WHERE phone = $1', [phone]);
     if (phoneResult.rows.length > 0) {
-      return res.status(400).json({ error: 'phoneNumber already exists.',type:'phone'});
+      return res.status(400).json({ error: 'شماره تلفن تکراری است',type:'phone'});
     }
     if (password.length <8){
-      return res.status(400).json({error:" the password must be at least 8 characters",type:'pass'})
+      return res.status(400).json({error:"رمز عبور باید حد اقل 8 کارکتر باشد",type:'pass'})
     }
     if (code != verificationCodes.get(phone).code){
-      return res.status(400).json({error:"the verification code is not valid",type:"all"})
+      return res.status(400).json({error:"کد تایید منقضی شده است",type:"all"})
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -108,7 +114,7 @@ const authController = {
       res.json({ success: true });
     } catch (err) {
       console.error(err);
-      res.status(500).json({ error: 'Database error' ,type:'Database'});
+      res.status(500).json({ error: 'مشکل دیتابیس' ,type:'Database'});
     }
   },
 
@@ -117,49 +123,53 @@ const authController = {
 
   login: async (req, res) => {
     const { phoneNumber, password,captcha } = req.body;
-    if (!phoneNumber || !password || !captcha) return res.status(400).json({ error: 'All fields are required' ,type:'all'});
+    if (!phoneNumber || !password || !captcha) return res.status(400).json({ error: 'تمامی زمینه ها لازم هستند' ,type:'all'});
     
     if(req.session.captcha !== captcha){
       console.log(req.session.captcha)
-      return res.status(400).json({error:'Captcha is required please enter it',type:'captcha'})
+      return res.status(400).json({error:'کد درون عکس را صحیح وارد نمایید',type:'captcha'})
     }
     
     try {
       const userResult = await db.query('SELECT id, first_name, last_name ,password_hash FROM users WHERE phone=$1', [phoneNumber]);
       if (userResult.rowCount === 0) {
-        return res.status(400).json({ error: 'Invalid credentials' ,type:"user"});
+        return res.status(400).json({ error: 'اطلاعات وارد شده صحیح نمیباشد' ,type:"user"});
       }
   
       const user = userResult.rows[0];
       const valid = await bcrypt.compare(password, user.password_hash);
       if (!valid) {
-        return res.status(400).json({ error: 'Invalid credentials',type:"user" });
+        return res.status(400).json({ error: 'اطلاعات وارد شده صحیح نمیباشد',type:"user" });
       }  
       const token = jwt.sign({ id: user.id, name: `${user.first_name} ${user.last_name}` }, SECRET, { expiresIn: TOKEN_EXPIRATION });
       res.cookie('token', token, { httpOnly: true, maxAge: 15 * 60 * 1000 });
       res.json({ success: true, name: user.first_name });
     } catch (err) {
       console.error(err);
-      res.status(500).json({ error: 'Database error' ,type:"Database"});
+      res.status(500).json({ error: 'مشکل دیتابیس' ,type:"Database"});
     }
   },
 
   sendfpVerificationCode: async (req,res) => {
-    const { phone } = req.body;
+    const { phone ,captcha} = req.body;
     const phoneResult = await db.query('SELECT 1 FROM users WHERE phone = $1', [phone]);
     if (phoneResult.rows.length === 0) {
-      return res.status(400).json({ error: 'Phone number Does not exists.' ,type:'phone'});
+      return res.status(400).json({ error: 'شماره تلفن شما ثبت نشده است' ,type:'phone'});
     }
-    if (!phone) return res.status(400).json({ error: 'Phone is required',type:'phone' });
-
+    if (!phone) return res.status(400).json({ error: 'شماره تلفن لازم میباشد',type:'phone' });
+    if (!captcha) return res.status(400).json({error:"کد درون عکس لازم میباشد",type:"captcha"})
+    if (req.session.captcha !== captcha){
+      console.log(req.session.captcha,captcha)
+      return res.status(400).json({error:"کد درون عکس را صحیح وارد نمایید",type:"captcha"})
+    }
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     const expiresAt = Date.now() + codefpExpiration;
 
     verificationfpCodes.set(phone, {code,expiresAt});
 
-    await sendfpVerificationCode(phone, code);
+    //await sendfpVerificationCode(phone, code);
 
-    return res.status(200).json({success:true})
+    return res.status(200).json({success:true,code:code})
 
   },
   
@@ -169,12 +179,12 @@ const authController = {
     const data = verificationfpCodes.get(phone);
 
     if (!data || data.code !== code) {
-      return res.status(400).json({ error: 'Invalid or expired code' ,type:"code"});
+      return res.status(400).json({ error: 'کد تایید فرستاده شده نادرست یا منقضی می باشد' ,type:"code"});
     }
 
     if (Date.now() > data.expiresAt){
         verificationfpCodes.delete(phone)
-        return res.status(400).json({ error: 'Code expired' ,type:"code"});
+        return res.status(400).json({ error: 'کد تایید فرستاده شده منقضی شده است' ,type:"code"});
     }
 
 
@@ -189,28 +199,28 @@ const authController = {
     const {phone,code,password,conf_password,captcha} = req.body;
 
      if (!phone || !code || !password || !conf_password || !captcha) {
-      return res.status(400).json({ error: 'All fields are required',type:"all" });
+      return res.status(400).json({ error: 'تمامی زمینه ها الزامی هستند',type:"all" });
     }
     
     if (req.session.captcha !== captcha){
-      return res.status(400).json({error:'Please enter the captcha properly',type:"captcha"})
+      return res.status(400).json({error:'کد درون عکس را صحیح وارد نمایید',type:"captcha"})
     }
 
     const phoneResult = await db.query('SELECT 1 FROM users WHERE phone = $1', [phone]);
     if (phoneResult.rows.length === 0) {
-      return res.status(400).json({ error: 'phoneNumber does not exist exists.',type:'phone'});
+      return res.status(400).json({ error: 'شماره تلفن وارد شده ثبت نشده است',type:'phone'});
     }
     if (password.length <8){
-      return res.status(400).json({error:" the password must be at least 8 characters",type:'pass'})
+      return res.status(400).json({error:"رمز عبور باید حداقل 8 کارکتر باشد",type:'pass'})
     }
     if (code != verificationfpCodes.get(phone).code){
       console.log(code);
       console.log(verificationfpCodes.get(phone));
-      return res.status(400).json({error:"the verification code is not valid",type:"all"})
+      return res.status(400).json({error:"کد تایید فرستاده شده منقضی شده است",type:"all"})
     }
 
     if (password != conf_password){
-      return res.status(400).json({error:"the passwords should match",type:"pass"})
+      return res.status(400).json({error:"رمز عبور و رمز عبور تاییدی همخوانی ندارند دوباره تلاش کنید",type:"pass"})
     }
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -224,7 +234,7 @@ const authController = {
       return res.json({ success: true });
     } catch (err) {
       console.error(err);
-      return res.status(500).json({ error: 'Database error' ,type:'Database'});
+      return res.status(500).json({ error: 'مشکل دیتابیس' ,type:'Database'});
     }
 
   }

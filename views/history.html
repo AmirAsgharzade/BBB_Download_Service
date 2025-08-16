@@ -1,35 +1,37 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fa">
 <head>
   <meta charset="UTF-8" />
   <title>History</title>
   <link rel="stylesheet" href="/css/history.css" />
+  <!-- <link rel="stylesheet" href="/css/bootstrap/bootstrap.min.css"> -->
+
   <style>
    
   </style>
 </head>
-<body>
+<body dir="rtl">
   <nav>
       <header>
         <div class="loggedin">
           <span id="userName"></span>
-          <button id="logoutBtn" class="nav-btn logoutbtn" onclick="logout()" style="display:inline-block;">Logout</button>
-          <button id="historyBtn" class="nav-btn his-btn" style="display:inline-block;" onclick="goHome()" >Home</button>
+          <button id="logoutBtn" class="nav-btn logoutbtn" onclick="logout()" style="display:inline-block;">خروج</button>
+          <button id="historyBtn" class="nav-btn his-btn" style="display:inline-block;" onclick="goHome()" >صفحه اصلی</button>
           </div>
       </header>
     </nav>
 
 
-  <div class="container">
-    <h2>Submited Links</h2>
-    <table id="historyTable">
+  <div class="container" dir="rtl">
+    <h2>لینک های فرستاده شده</h2>
+    <table id="historyTable" dir="rtl">
       <thead>
         <tr>
-          <th data-column="id">ID</th>
-          <th data-column="link">Link</th>
-          <th data-column="created_at">Created At</th>
-          <th data-column="downloaded_url">downloaded_url</th>
-          <th data-column="status">status</th>
+          <th data-column="id" style="text-align: right;">شناسه</th>
+          <th data-column="link" style="text-align: right;">لینک ویدیو</th>
+          <th data-column="created_at" style="text-align: right;">تاریخ درخواست</th>
+          <th data-column="downloaded_url" style="text-align: right;">لینک دانلود</th>
+          <th data-column="status" style="text-align: right;">وضعیت درخواست</th>
 
         </tr>
       </thead>
@@ -44,5 +46,7 @@
   </div>
 
   <script src="/js/history.js"></script>
+  <script src="/js/bootstrap/bootstrap.min.js"></script>
+
 </body>
 </html>

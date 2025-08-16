@@ -1,50 +1,58 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fa">
 <head>
   <meta charset="UTF-8">
-  <title>Signup</title>
+  <title>بازیابی رمز عبور</title>
+  <!-- <link rel="stylesheet" href="/css/bootstrap/bootstrap.min.css"> -->
   <link rel="stylesheet" href="/css/login.css">
+
 </head>
 <body>
-  <div class="container">
-    <h2>Reset Password</h2>
+  <div class="form-container">
+    <h2>بازیابی رمز عبور</h2>
     <div id="step1" class="step">
-      <input type="text" id="phone" placeholder="Enter phone number" />
+      <input type="text" id="phone" placeholder="شماره تلفن" />
       <div id="phone-status"></div>
+      <div class="cap-container">
+        
+        <input type="text" id="captcha" required autocomplete="off" placeholder="اطلاعات درون عکس را وارد نمایید"/>
+        <img id="captcha-image" title="Click to reload captcha" alt="captcha" />
+        <button onclick="reloadCaptcha()" id="reloadcaptcha">
+        <img src="/icons/reload.png" alt="reload" style="width:20px; height:20px;">
+        </button>
+        
+      </div>
+      <div id="captcha-status"></div>
       <div id="verify" class="step" >
-        <input type="text" id="code" placeholder="Enter verification code" />
-        <button onclick="sendfpCode()" id="codebutton">Send Code</button>
+        <input type="text" id="code" placeholder="کد تایید" />
+        <button onclick="sendfpCode()" id="codebutton">ارسال کد</button>
         <div id="timerText" aria-live="polite"></div>
         <div id="code-status"></div>
       </div>
       <div class="button_wrapper">  
-        <button onclick="verifyfpCode()">Verify</button>
+        <button onclick="verifyfpCode()">تایید </button>
       </div>
     </div>
 
 
     <div id="step2" class="step" style="display: none;">
-      <input type="password" id="password" placeholder="New Password" />
-      <input type="password" id="conf_password" placeholder="Password Again" />
+      <input type="password" id="password" placeholder="رمز عبور" />
+      <input type="password" id="conf_password" placeholder=" تایید رمز عبور" />
       <div id="pass-status"></div>
       
-      <div class="cap-container">
-        
-        <input type="text" id="captcha" required autocomplete="off" placeholder="Enter what is in the image "/>
-        
-        <img id="captcha-image" title="Click to reload captcha" alt="captcha" />
-      </div>
+
       <div class="button_wrapper">
       
-        <button onclick="resetPass()">Reset Password</button>
+        <button onclick="resetPass()">تغییر رمز عبور</button>
       </div>
     </div>
-    <div id="captcha-status"></div>
+    
     <div id="all-status"></div>
 
   </div>
   
   <div id="Database-status"></div>
   <script src="/js/fpass.js"></script>
+  <script src="/js/bootstrap/bootstrap.min.js"></script>
 </body>
 </html>

@@ -13,54 +13,70 @@ const screenshotsFolder = process.env.PREVIEW_FOLDER
 const {deleteFolder} = require('../jobs/recorder')
 
 const recorderController ={
-
-    previewVideo:async (req,res)=>{
-        const {link} = req.body;
-        console.log("before the urltest")
+    testingUrl:async(req,res) => {
+        const {link} = req.body
+        console.log(link)
         const isvalid = await testUrl(link)
         if (!isvalid){
             console.log("after the url test")
-            return res.status(400).json({result:false,ID:null,error:"the link is invalid please provide a valid one.",type:"link"})
-        }else{
-            const previewId = uuidv4();
-
-                await deleteFolder(screenshotsFolder)
-                await preview(link,previewId)
-                
-                const files = fs.readdir(path.join(screenshotsFolder,previewId),(err,files) => {
-                    if (err) {
-                        console.log(err)
-                        return res.status(500).send({result:false,error:"couldn't read the files properly", type:"files"})
-                    }
-                    
-                    const imageUrls = files.map(file => `/screenshots/tmp/${previewId}/${file}`);
-                    res.json({result:true ,images:imageUrls});    
-                    console.log(files)
-                })
+            return res.status(400).json({result:false,ID:null,error:"لینک وارد شده نا معتبر میباشد",type:"preview",type2:"link"})
             }
+        else{
+            return res.status(200).json({result:true})
+        }
+
+    },
+    previewVideo:async (req,res)=>{
+        const {link ,captcha} = req.body;
+        console.log("before the urltest")
+        console.log(link)
+        // const isvalid = await testUrl(link)
+        // if (!isvalid){
+        //     console.log("after the url test")
+        //     return res.status(400).json({result:false,ID:null,error:"the link is invalid please provide a valid one.",type:"link"})
+        // }else{
+        if (req.session.captcha !== captcha) {
+            console.log(captcha)
+            return res.status(400).json({error:"لطفا اطلاعات درون عکس را درست وارد نمایید", type:"pre-captcha"})
+        }
+        const previewId = uuidv4();
+
+        await deleteFolder(screenshotsFolder)
+        await preview(link,previewId)
+                
+        const files = fs.readdir(path.join(screenshotsFolder,previewId),(err,files) => {
+            if (err) {
+                console.log(err)
+                return res.status(500).send({result:false,error:"couldn't read the files properly", type:"files"})
+                }
+                    
+            const imageUrls = files.map(file => `/screenshots/tmp/${previewId}/${file}`);
+                res.json({result:true ,images:imageUrls});    
+                console.log(files)                })
+            
     },
 
     recordMeeting: async (req,res) =>{
 
         try{    
+            const videoId = uuidv4()
             const userID = req.user.id
-            const {link} = req.body;
-            const isvalid = await testUrl(link)
-            if (!isvalid){
-                res.status(400).json({result:false,ID:null,error:"the link is invalid please provide a valid one.",type:"link"})
-            }else{
-                if (req.user){
-                    
-                    console.log(req.body)
-                    const result = await db.query("INSERT INTO user_links(user_id,link,status) VALUES ($1,$2,$3) RETURNING id",
-                [userID,link,"in queue"]);
+            const {link,captcha} = req.body;
+            // const isvalid = await testUrl(link)
+            if (req.user){
+                if (req.session.captcha !== captcha) {
+                    console.log(captcha)
+                    return res.status(400).json({error:"لطفا اطلاعات درون عکس را درست وارد نمایید", type:"captcha"})
+                }           
+                console.log(req.body)
+                const result = await db.query("INSERT INTO user_links(user_id,link,video_id,status) VALUES ($1,$2,$3,$4) RETURNING id",
+                [userID,link,videoId,"in queue"]);
                 
                 queue.enqueue(result.rows[0].id);
                 
                 
                 res.status(201).send({result:true,ID:result.rows[0].id})
             }
-        }
             
         }catch(error){
             console.error(error)

@@ -1,4 +1,8 @@
 const db = require('../db');
+const fs =require('fs')
+const path =require('path')
+
+
 
 const userController = {
 
@@ -39,6 +43,78 @@ const userController = {
       res.status(500).json({ error: 'Database error' ,type:"Database"});
     }
   },
+
+  getDashboardDetail: async (req,res) =>{
+
+    const userId = req.user.id;
+    const query =`
+    SELECT
+      COUNT(*) FILTER (WHERE user_id = $1) as total_requests,
+      COUNT(*) FILTER (WHERE user_id = $1 AND status = 'in queue') as queued_requests,
+      COUNT(*) FILTER (WHERE user_id = $1 AND  status = 'processing') as processing_requests,
+      COUNT(*) FILTER (WHERE user_id = $1 AND status = 'processed') as processed_requests
+      FROM user_links
+    `
+    
+    try {
+
+      const result = await db.query(query,[userId])
+      const stats = result.rows[0];
+
+      return res.json(stats)
+
+    }catch(err){
+      console.log(err)
+      res.status(500).json({'error':"database Error",type:"Database"})
+    }
+
+
+  },
+  downloadVideo:async (req,res) => {
+    const videoId = req.params.id;
+    const userId = req.user.id;
+    try {
+
+      const videoResult = await db.query(
+        "SELECT video_id,user_id FROM user_links WHERE id =$1",[videoId]
+    )
+    
+    
+    if (videoResult.rows.length === 0){
+      return res.status(404).json({error:"Video not found",id:videoId,type:"video"})
+    }
+    
+    const video = videoResult.rows[0];
+
+    if (video.user_id !== userId){
+      return res.status(403).send("forbidden: you do not have access to this video")
+    }
+    
+    const VideoPath = path.join(__dirname,'videos',`${video.videoId}.mp4`)
+    
+    if(!fs.existsSync(VideoPath)){
+      return res.status(404).send({error:"Video is missing",type:"video"})
+    }
+    
+    
+    res.download(VideoPath,"Recording.mp4",(err) => {
+      if (err){
+        console.log("error sending file:",VideoPath)
+        if (!res.headerSent){
+          res.status(500).send('Server error while sending')
+        }
+      }
+      
+    });
+
+    
+    
+    
+  }catch(err){
+    console.log("Error in /videos/download/:id:",err);
+    res.status(500).send("Server Error")
+  }
+  }
 };
 
 module.exports = userController;

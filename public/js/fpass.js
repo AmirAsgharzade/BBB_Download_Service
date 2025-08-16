@@ -1,12 +1,12 @@
 window.onload = loadCaptcha()
 
+const verifyfield = document.getElementById("code")
+verifyfield.disabled = true
+verifyfield.classList.add("disabled");
 
 
 async function loadCaptcha() {
       const captchaImg = document.getElementById('captcha-image');
-
-
-
 
       try {
         const response = await fetch(`/auth/captcha`, {
@@ -25,30 +25,38 @@ async function loadCaptcha() {
       }
     }
 
-
+function reloadCaptcha(){
+  loadCaptcha()
+}
     
 let phoneValue = '';
 let timerInterval;
 const countdownDuration = 2*60;
 const sendCodeBtn = document.getElementById("codebutton");
-const verificationCodeInput = document.getElementById("code");
+
 const timerText = document.getElementById("timerText");
 
 function sendfpCode() {
   const phone = document.getElementById('phone').value;
+  const captcha = document.getElementById('captcha').value;
   fetch('/auth/forgot-pass/phone', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ phone })
+    body: JSON.stringify({ phone,captcha })
   })
     .then(res => res.json())
     .then(data => {
       if (data.success) {
+
+        verifyfield.disabled = false
+        verifyfield.classList.remove("disabled");
+
         phoneValue = phone;
-//        console.log(data.code);
+       console.log(data.code);
         startCountdown()
         
       } else {
+        loadCaptcha()
         showError(data.error,data.type);
       }
     });
@@ -92,7 +100,7 @@ function updateButtonText(seconds) {
     fetch('/auth/forgot-pass/verify', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phone: phoneValue, code })
+      body: JSON.stringify({ phone: phoneValue, code:code })
     })
     .then(res => res.json())
     .then(data => {

@@ -1,5 +1,21 @@
+@font-face {
+  font-family: 'Vazirmatn';
+  src: url('/fonts/Vazirmatn-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+*{
+  font-family: 'Vazirmatn', sans-serif;
+  direction: rtl;
+
+}
+
+
 body {
-  font-family: Arial, sans-serif;
+  direction: rtl;
+  font-family: 'Vazirmatn', sans-serif;
   background-color: #f5f6fa;
   margin: 0;
   padding: 0;
@@ -61,8 +77,11 @@ table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 20px;
+      text-align: right;
     }
     th, td {
+      direction: rtl;
+      text-align: right;
       padding: 10px;
       border: 1px solid #ccc;
       text-align: left;

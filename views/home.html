@@ -1,59 +1,187 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="rtl">
 <head>
   <meta charset="UTF-8" />
   <title>Home</title>
   <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/bootstrap/bootstrap.min.css">
+  <style>
+    /* Custom modal styles */
+    
+  </style>
 </head>
-<body>
+<body dir="rtl">
   <nav>
-
-      <header>
-        <div class="loggedin">
-          <span id="userName"></span>
-          <button id="logoutBtn" class="nav-btn logoutbtn" onclick="logout()" style="display:none;">Logout</button>
-          <button id="historyBtn" class="nav-btn his-btn" style="display:none;" onclick="goHistory()" >History</button>
-        </div>
-          <button id="loginBtn" class="nav-btn login" onclick="window.location.href='/auth/login'" style="display:none;">Login</button>
-          <button id="signupBtn" class="nav-btn" onclick="window.location.href='/auth/signup'" style="display:none;">SignUp</button>
-      </header>
-    </nav>
-    
-    
-    <h1>Welcome</h1>
-    <div class="container">
+    <header>
+      <div class="loggedin">
+        <span id="userName"></span>
+        <button id="logoutBtn" class="nav-btn logoutbtn" onclick="logout()" style="display:none;">خروج</button>
+        <button id="historyBtn" class="nav-btn his-btn" style="display:none;" onclick="goHistory()" >تاریخچه</button>
+      </div>
+      <button id="loginBtn" class="nav-btn login" onclick="window.location.href='/auth/login'" style="display:none;">ورود</button>
+      <button id="signupBtn" class="nav-btn" onclick="window.location.href='/auth/signup'" style="display:none;">ثبت نام</button>
+    </header>
+  </nav>
+  
+  <h1>خوش آمدید</h1>
+  <div class="container" id="container">
     <main>
-      <form action="/recorder/record-meeting" method="post" id="userlinkform">
+      <!-- Authenticated user form -->
+      <form action="" method="post" id="userlinkform" style="display:none;">
         <div class="inp-container">
-
-          <input  type="text" id="linkInput" name="link" placeholder="Enter link here..." rows="3" style="width:100%;"></textarea>
-          <button type="submit" onclick="" class="send-btn">Send</button>
-          
+          <input type="text" id="userLinkInput" name="link" placeholder="لینک را وارد کنید" style="width:100%;" />
+          <!-- Change submit button to button to open modal -->
+          <button type="submit" id="userModalBtn" class="send-btn">بررسی</button>
         </div>
       </form>
-      <form action="" method="post" id="anlinkform">
-        <div class="inp-container">
 
-          <input  type="text" id="linkInput" name="link" placeholder="Enter link here..." rows="3" style="width:100%;"></textarea>
-          <button type="submit" onclick="" class="send-btn">Send</button>
-          
+      <!-- Non-authenticated user form -->
+      <form action="" method="post" id="anlinkform" style="display:none;">
+        <div class="inp-container">
+          <input type="text" id="anLinkInput" name="link" placeholder="لینک را وارد کنید" style="width:100%;" />
+          <!-- Change submit button to button to open modal -->
+          <button type="submit" id="anModalBtn" class="send-btn">بررسی</button>
         </div>
       </form>
     </main>
-
-    <div id="progress"></div>
-    <div id="link-status"></div>
+    
+    <div id="pre-captcha-status"></div>
+    <div id="result"></div>
     <div id="files-status"></div>
     <div id="auth-status"></div>
-
+    <div id="captcha-status"></div>
+    
   </div>
+  <div id="image-container"></div>
   
-<div id="image-container"></div>
-<h6>
-  <div id="suggest"></div>
-</h6>
-  
+  <h6><div id="suggest"></div></h6>
 
+
+  <div class="container py-5" id="dashboard" dir="rtl">
+    <h1>داشبورد</h1>
+    <h5 id="userheader"></h5>
+    <div class="row text-center mt-4">
+      <div class="col-md-3">
+        <div class="card bg-primary text-white mb-3">
+          <div class="card-body">
+            <h5 class="card-title">درخواست های فرستاده شده</h5>
+            <p id="totalRequests" class="card-text fs-3">0</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card bg-warning text-dark mb-3">
+          <div class="card-body">
+            <h5 class="card-title">درخواست های درون صف</h5>
+            <p id="queuedRequests" class="card-text fs-3">0</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card bg-info text-white mb-3">
+          <div class="card-body">
+            <h5 class="card-title">درخواست های درحال پردازش</h5>
+            <p id="processingRequests" class="card-text fs-3">0</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card bg-success text-white mb-3">
+          <div class="card-body">
+            <h5 class="card-title">درخواست های پردازش شده</h5>
+            <p id="processedRequests" class="card-text fs-3">0</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+
+  <!-- Modal for authenticated user form -->
+  <div class="modal fade custom-modal" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content text-right" dir="rtl">
+        <div class="modal-header">
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <h5 class="modal-title" id="userModalLabel">اضافه کردن ویدیو برای دانلود</h5>
+        </div>
+        <div class="modal-body">
+          <div id="progress"></div>
+          <img src="/icons/loading1.gif" alt="loading..." style="width: 20px; height: auto;" class="img-fluid" id="testloading">
+          <br>
+          <div id="link-status"></div>
+          <div class="cap-container" id="captcha-container" style="display: none;">
+        
+        <input type="text" id="captcha" required autocomplete="off" placeholder="اطلاعات درون عکس را وارد نمایید"/>
+        <img id="user-captcha-image" title="Click to reload captcha" alt="captcha" />
+        <button onclick="reloadCaptcha()" id="reloadcaptcha">
+        <img src="/icons/reload.png" alt="reload" style="width:20px; height:20px;">
+        </button>
+        
+      </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="user-close" onclick="closeLink()">بستن</button>
+          <button type="button" class="btn btn-danger" style="display: none;" id="user-no" onclick="closeLink()">خیر</button>
+          <button type="button" class="btn btn-success" style="display: none;" id="user-yes" onclick="addToQueue()">بله</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for non-authenticated user form -->
+  <div class="modal fade custom-modal" id="anModal" tabindex="-1" aria-labelledby="anModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content text-right" dir="rtl">
+        <div class="modal-header">
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <h5 class="modal-title" id="anModalLabel">پیشنمایش ویدیو</h5>
+        </div>
+        <div class="modal-body">
+          <div id="pre-progress"></div>
+          <img src="/icons/loading1.gif" alt="loading..." style="width: 20px; height: auto;" class="img-fluid" id="pre-testloading">
+          <br>
+          <div id="preview-status"></div>
+        <div class="cap-container" id="pre-cap" style="display: none;">
+        
+        <input type="text" id="pre-captcha" required autocomplete="off" placeholder="اطلاعات درون عکس را وارد نمایید"/>
+        <img id="captcha-image" title="Click to reload captcha" alt="captcha" />
+        <button onclick="reloadCaptcha()" id="reloadcaptcha">
+        <img src="/icons/reload.png" alt="reload" style="width:20px; height:20px;">
+        </button>
+        
+      </div>
+        </div>
+        <div class="modal-footer">
+          
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="pre-close" onclick="closePreview()">بستن</button>
+          <button type="button" class="btn btn-danger" style="display: none;" id="pre-no" onclick="closePreview()">خیر</button>
+          <button type="button" class="btn btn-success" style="display: none;" id="pre-yes" onclick="preview()">بله</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/jquery/jquery.min.js"></script>
+  <script src="/js/bootstrap/bootstrap.min.js"></script>
   <script src="/js/home.js"></script>
+  <script>
+    // Simulate checking user authentication; replace with your actual logic
+    const isAuthenticated = false; // change this to true or false accordingly
+
+    // Show only the form (and modal button) related to the user auth status
+
+      // Bootstrap 5 Modal objects
+      
+
+  </script>
+
 </body>
 </html>
