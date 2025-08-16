@@ -7,12 +7,12 @@ const path = require('path')
 const session = require('express-session')
 
 const cors = require('cors');
-const { deleteOldFiles } = require('./jobs/recorder')
+const { deleteOldFiles, deleteFolder } = require('./jobs/recorder')
 
 const app = express();
 const PORT = process.env.PORT;
 const IP = process.env.IP;
-
+const screenshotsFolder = process.env.PREVIEW_FOLDER
 
 // making sure the app can take all kinds of data and has a cookie parser
 app.use(express.urlencoded({extended: true}));
@@ -63,7 +63,10 @@ const server = app.listen(PORT, ()=>{
 
     processURLQueue();
     deleteOldFiles();
+    deleteFolder(screenshotsFolder)
     setInterval(deleteOldFiles,24*60*60*1000)
+    setInterval(deleteFolder,5*60*1000)
+
 });
 
 server.setTimeout(5*60*1000);

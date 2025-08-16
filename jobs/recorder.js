@@ -450,5 +450,15 @@ function deleteOldFiles() {
     });
   });
 }
+
+
+async function updateVideoStatus(){
+  const results = await db.query("SELECT video_id FROM user_links");
+  results.rows.forEach(row => {
+    if (!fs.existsSync(`${VIDEOS_DIR}/${row.video_id}.mp4`)){
+      db.query("UPDATE user_links SET video_status = $1 WHERE video_id = $2",["deleted",row.video_id])
+    }
+  })
+}
 // exporting the recorder to be used by the server
 module.exports = {startBBBRecording,testUrl,preview,screenshotsDir,deleteFolder,deleteOldFiles};

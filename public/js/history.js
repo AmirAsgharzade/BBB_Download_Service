@@ -80,27 +80,30 @@ function populateTable(rows) {
   tbody.innerHTML = '';
 
   rows.forEach(row => {
-    console.log(row)
-    const tr = document.createElement('tr');
-    if (row.download_url === null){
+    // console.log(row)
+    if (row.video_status !== "deleted" ){
+      const tr = document.createElement('tr');
 
-      tr.innerHTML = `
+      if (row.download_url === null){
+        
+        tr.innerHTML = `
         <td style="text-align: right;">${row.id}</td>
         <td style="text-align: right;"><a href="${row.link}"><img src='/icons/link.png' alt='the link'></a></td>
         <td style="text-align: right;">${toSolarDateTime(new Date(row.created_at).toLocaleString())}</td>
         <td style="text-align: right;">لینک اماده نیست</td>
         <td style="text-align: right;">${row.status}</td>
-      `;
-    }else{
-      tr.innerHTML = `
+        `;
+      }else{
+        tr.innerHTML = `
         <td style="text-align: right;">${row.id}</td>
         <td style="text-align: right;"><a href="${row.link}"><img src='/icons/link.png' alt='the link'></a></td>
         <td style="text-align: right;">${toSolarDateTime(new Date(row.created_at).toLocaleString())}</td>
-        <td style="text-align: right;"><a href="${row.download_url}"><img src='/icons/download.png'></a></td>
+        <td style="text-align: right;"><a href="download/videos/:${row.id}"><img src='/icons/download.png'></a></td>
         <td style="text-align: right;">${row.status}</td>
       `;
     }
     tbody.appendChild(tr);
+  }
   });
 }
 

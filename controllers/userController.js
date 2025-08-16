@@ -18,7 +18,7 @@ const userController = {
 
     try {
       const dataResult = await db.query(
-        `SELECT id, link, created_at ,download_url,status
+        `SELECT id, link, created_at ,video_id,status
          FROM user_links
          WHERE user_id = $1
          ORDER BY ${sortColumn} ${sortOrder}

@@ -41,7 +41,7 @@ const recorderController ={
         }
         const previewId = uuidv4();
 
-        await deleteFolder(screenshotsFolder)
+        
         await preview(link,previewId)
                 
         const files = fs.readdir(path.join(screenshotsFolder,previewId),(err,files) => {
