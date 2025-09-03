@@ -26,24 +26,9 @@
   <h1>خوش آمدید</h1>
   <div class="container" id="container">
     <main>
-      <!-- Authenticated user form -->
-      <form action="" method="post" id="userlinkform" style="display:none;">
-        <div class="inp-container">
-          <input type="text" id="userLinkInput" name="link" placeholder="لینک را وارد کنید" style="width:100%;" />
-          <!-- Change submit button to button to open modal -->
-          <button type="submit" id="userModalBtn" class="send-btn">بررسی</button>
-        </div>
-      </form>
-
-      <!-- Non-authenticated user form -->
-      <form action="" method="post" id="anlinkform" style="display:none;">
-        <div class="inp-container">
-          <input type="text" id="anLinkInput" name="link" placeholder="لینک را وارد کنید" style="width:100%;" />
-          <!-- Change submit button to button to open modal -->
-          <button type="submit" id="anModalBtn" class="send-btn">بررسی</button>
-        </div>
-      </form>
-    </main>
+      <div id="general-form"></div>
+     
+         </main>
     
     <div id="pre-captcha-status"></div>
     <div id="result"></div>
@@ -52,49 +37,19 @@
     <div id="captcha-status"></div>
     
   </div>
+
+  <div style="display:none;" class="container mt-3" id="bar">
+
+    <div id="progressBarContainer">
+            <div id="progressBarFill"></div>
+    </div>
+    </div>
   <div id="image-container"></div>
   
   <h6><div id="suggest"></div></h6>
 
 
-  <div class="container py-5" id="dashboard" dir="rtl">
-    <h1>داشبورد</h1>
-    <h5 id="userheader"></h5>
-    <div class="row text-center mt-4">
-      <div class="col-md-3">
-        <div class="card bg-primary text-white mb-3">
-          <div class="card-body">
-            <h5 class="card-title">درخواست های فرستاده شده</h5>
-            <p id="totalRequests" class="card-text fs-3">0</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="card bg-warning text-dark mb-3">
-          <div class="card-body">
-            <h5 class="card-title">درخواست های درون صف</h5>
-            <p id="queuedRequests" class="card-text fs-3">0</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="card bg-info text-white mb-3">
-          <div class="card-body">
-            <h5 class="card-title">درخواست های درحال پردازش</h5>
-            <p id="processingRequests" class="card-text fs-3">0</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="card bg-success text-white mb-3">
-          <div class="card-body">
-            <h5 class="card-title">درخواست های پردازش شده</h5>
-            <p id="processedRequests" class="card-text fs-3">0</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <div class="container py-5" id="dashboard" dir="rtl" style="display:none;"></div>
 
 
 
@@ -109,7 +64,7 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content text-right" dir="rtl">
         <div class="modal-header">
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="closeLink()"></button>
           <h5 class="modal-title" id="userModalLabel">اضافه کردن ویدیو برای دانلود</h5>
         </div>
         <div class="modal-body">
@@ -119,7 +74,7 @@
           <div id="link-status"></div>
           <div class="cap-container" id="captcha-container" style="display: none;">
         
-        <input type="text" id="captcha" required autocomplete="off" placeholder="اطلاعات درون عکس را وارد نمایید"/>
+        <input type="text" id="captcha" style="direction:ltr;" required autocomplete="off" placeholder="اطلاعات درون عکس را وارد نمایید"/>
         <img id="user-captcha-image" title="Click to reload captcha" alt="captcha" />
         <button onclick="reloadCaptcha()" id="reloadcaptcha">
         <img src="/icons/reload.png" alt="reload" style="width:20px; height:20px;">
@@ -141,7 +96,7 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content text-right" dir="rtl">
         <div class="modal-header">
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="closePreview()"></button>
           <h5 class="modal-title" id="anModalLabel">پیشنمایش ویدیو</h5>
         </div>
         <div class="modal-body">
@@ -151,7 +106,7 @@
           <div id="preview-status"></div>
         <div class="cap-container" id="pre-cap" style="display: none;">
         
-        <input type="text" id="pre-captcha" required autocomplete="off" placeholder="اطلاعات درون عکس را وارد نمایید"/>
+        <input type="text" style="direction:ltr;" id="pre-captcha" required autocomplete="off" placeholder="اطلاعات درون عکس را وارد نمایید"/>
         <img id="captcha-image" title="Click to reload captcha" alt="captcha" />
         <button onclick="reloadCaptcha()" id="reloadcaptcha">
         <img src="/icons/reload.png" alt="reload" style="width:20px; height:20px;">

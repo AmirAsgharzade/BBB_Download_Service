@@ -26,6 +26,7 @@ async function loadCaptcha() {
     }
 
 function reloadCaptcha(){
+	document.getElementById('captcha').value = '';
   loadCaptcha()
 }
     
@@ -56,7 +57,7 @@ function sendfpCode() {
         startCountdown()
         
       } else {
-        loadCaptcha()
+        reloadCaptcha()
         showError(data.error,data.type);
       }
     });
@@ -84,7 +85,7 @@ function updateButtonText(seconds) {
   const secs = seconds % 60;
   const formattedTime = `${mins}:${secs.toString().padStart(2, "0")}`;
 
-  timerText.textContent = `Resend available in ${formattedTime}`;
+  timerText.textContent = `ارسال مجدد در ${formattedTime}`;
 
 }function resetButton() {
 
@@ -108,6 +109,7 @@ function updateButtonText(seconds) {
         document.getElementById('step1').style.display = 'none';
         document.getElementById('step2').style.display = 'block';
       } else {
+	reloadCaptcha();
         showError(data.error,data.type);
       }
     });
@@ -120,7 +122,7 @@ function resetPass() {
     code:document.getElementById('code').value,
     password: document.getElementById('password').value,
     conf_password: document.getElementById('conf_password').value,
-    captcha:document.getElementById('captcha').value
+//    captcha:document.getElementById('captcha').value
   };
 
   fetch('/auth/forgot-pass/resetPassword', {

@@ -28,6 +28,7 @@ async function loadCaptcha() {
     }
 
 function reloadCaptcha(){
+	document.getElementById('captcha').value = '';
   loadCaptcha()
 }
 
@@ -45,7 +46,7 @@ function loginWithphone() {
       if (data.success) {
         window.location.href = '/home';
       } else {
-        loadCaptcha()
+        reloadCaptcha()
         showError(data.error,data.type);
       }
     });

@@ -63,7 +63,7 @@ nav button.logoutbtn:hover{
   background-color: #267e96;
 }
 
-.container {
+.table-container {
   width: 90%;
   max-width: 1200px;
   margin: 50px auto;
@@ -99,7 +99,57 @@ table {
       padding: 6px 12px;
       cursor: pointer;
     }
+	td{
+		cursor:default;
+	}
 
 span{
   color:whitesmoke;
 }
+
+
+    .tooltip-container {
+      position: relative;
+      display: inline-block;
+      max-width: 100%;
+    }
+
+    .tooltip-container img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .tooltip-text {
+      visibility: hidden;
+      opacity: 0;
+      max-width: 200px;
+      background-color: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      text-align: right; /* for Persian text */
+      padding: 8px;
+      border-radius: 5px;
+      position: absolute;
+      top: 50%;
+      right: 100%; /* show on the right side */
+      transform: translateY(-50%);
+      margin-right: 10px; /* space between img and tooltip */
+      transition: opacity 0.3s ease;
+      z-index: 100;
+      direction: rtl; /* ensure text direction */
+      white-space: nowrap;
+    }
+
+    .tooltip-container:hover .tooltip-text,
+    .tooltip-container:focus-within .tooltip-text {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+      .tooltip-text {
+        max-width: 90vw;
+        white-space: normal; /* allow wrapping on small screens */
+      }
+    }

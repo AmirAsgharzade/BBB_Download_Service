@@ -83,24 +83,46 @@ function populateTable(rows) {
     // console.log(row)
     if (row.video_status !== "deleted" ){
       const tr = document.createElement('tr');
-
-      if (row.download_url === null){
-        
-        tr.innerHTML = `
+	let stat = "در صف"
+	let statIcon = "/icons/queue.png"
+      if(row.status == "processing"){ 
+	      stat = "در حال پردازش";
+	      statIcon = "/icons/sand-watch.png";
+      }
+      else if (row.status == "processed") {
+	      stat = "پردازش شده";
+	      statIcon = "/icons/done.png";
+      }
+      if (row.download_url !== null && row.status === "processed" ){
+         tr.innerHTML = `
         <td style="text-align: right;">${row.id}</td>
-        <td style="text-align: right;"><a href="${row.link}"><img src='/icons/link.png' alt='the link'></a></td>
+        <td style="text-align: right;"><a href="${row.link}" target="_blank"><img src='/icons/link.png' alt='the link'></a></td>
         <td style="text-align: right;">${toSolarDateTime(new Date(row.created_at).toLocaleString())}</td>
-        <td style="text-align: right;">لینک اماده نیست</td>
-        <td style="text-align: right;">${row.status}</td>
-        `;
-      }else{
-        tr.innerHTML = `
-        <td style="text-align: right;">${row.id}</td>
-        <td style="text-align: right;"><a href="${row.link}"><img src='/icons/link.png' alt='the link'></a></td>
-        <td style="text-align: right;">${toSolarDateTime(new Date(row.created_at).toLocaleString())}</td>
-        <td style="text-align: right;"><a href="download/videos/:${row.id}"><img src='/icons/download.png'></a></td>
-        <td style="text-align: right;">${row.status}</td>
+        <td style="text-align: right;"><a href="download/videos/${row.id}"><img src='/icons/download.png'></a></td>
+        <td style="text-align: right;">
+	<div class="tooltip-container" tabindex="0">
+	<img src=${statIcon} alt=${stat} width="32" height="32" data-bs-toggle="tooltip" data-bs-placement="top">
+	<div class="tooltip-text">${stat}</div>
+	</div>
+	</td>
       `;
+        
+      }else{
+	tr.innerHTML = `
+        <td style="text-align: right;">${row.id}</td>
+        <td style="text-align: right;"><a href="${row.link}" target="_blank"><img src='/icons/link.png' alt='the link'></a></td>
+        <td style="text-align: right;">${toSolarDateTime(new Date(row.created_at).toLocaleString())}</td>
+        <td style="text-align: right;">لینک آماده نیست</td>
+	<td style="text-align: right;">
+	<div class="tooltip-container" tabindex="0">
+	<img src=${statIcon} alt=${stat} width="24" height="24" data-bs-toggle="tooltip" data-bs-placement="top">
+        <div class="tooltip-text">${stat}</div>
+        </div>
+	</td>
+      `;
+        //<td style="text-align: right;">${stat}</td>
+        
+        
     }
     tbody.appendChild(tr);
   }
@@ -141,3 +163,8 @@ function logout() {
 function goHome() {
   window.location.href = '/home';
 }
+
+
+// document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
+//      new bootstrap.Tooltip(el);
+//    });

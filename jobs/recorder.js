@@ -77,7 +77,7 @@ async function testUrl(link){
       
     return !!(timeelement && element)
   }catch (err){
-    console.log(err)
+    console.log("Error is :",err)
     return false
   }finally{
     if (browser){ await browser.close()}
@@ -403,7 +403,7 @@ function startRecording(linkid,name) {
     console.log(`ffmpeg exited with code ${code} and signal ${signal}`);
     try{
 
-      if(code === 0){
+      if(code === null){
         await db.query("UPDATE user_links SET status = $1 WHERE id = $2",["processed",linkid]);  
         console.log("saved in database")  
       }else{

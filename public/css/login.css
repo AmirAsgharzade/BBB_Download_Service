@@ -8,7 +8,6 @@
 
 *{
   font-family: 'Vazirmatn', sans-serif;
-  direction: rtl;
 
 }
 
@@ -42,6 +41,16 @@ input {
   padding: 12px;
   margin: 10px 0;
   box-sizing: border-box;
+  text-align:left;
+  direction:ltr;
+}
+input::placeholder{
+	text-align:right;
+	direction:rtl;
+}
+input.per{
+	text-align:right;
+	direction:rtl;
 }
 input[type="radio"] {
   width: 10%;

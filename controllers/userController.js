@@ -1,6 +1,7 @@
 const db = require('../db');
 const fs =require('fs')
-const path =require('path')
+const path =require('path');
+require('dotenv').config();
 
 
 
@@ -90,14 +91,14 @@ const userController = {
       return res.status(403).send("forbidden: you do not have access to this video")
     }
     
-    const VideoPath = path.join(__dirname,'videos',`${video.videoId}.mp4`)
+    const VideoPath = path.join(process.env.VIDEOS_DIR,`${video.video_id}.mp4`)
     
     if(!fs.existsSync(VideoPath)){
       return res.status(404).send({error:"Video is missing",type:"video"})
     }
     
     
-    res.download(VideoPath,"Recording.mp4",(err) => {
+    res.download(VideoPath,`Recording-${videoId}.mp4`,(err) => {
       if (err){
         console.log("error sending file:",VideoPath)
         if (!res.headerSent){

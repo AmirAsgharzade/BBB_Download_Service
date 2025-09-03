@@ -24,7 +24,8 @@ CREATE TABLE user_links (
   link TEXT NOT NULL,
   status VARCHAR(50) NOT NULL DEFAULT 'in queue',
   video_id UUID DEFAULT NULL,
-  created_at TIMESTAMP NOT NULL DEFAULT NOW()
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  video_status VARCHAR(50) NOT NULL DEFAULT 'in queue'
 );
 
 -- Optional: Add an index for faster queries on created_at if needed

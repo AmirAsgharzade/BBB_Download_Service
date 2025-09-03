@@ -14,6 +14,24 @@ const codefpExpiration = process.env.CODE_FP_EXPIRE;
 const verificationCodes = new Map();
 const verificationfpCodes = new Map();
 
+function validateText(text) {
+  // Check if length is 11
+  if (text.length !== 11) {
+    return false;
+  }
+  
+  // Check if it starts with '09'
+  if (!text.startsWith('09')) {
+    return false;
+  }
+  
+  // Check if it contains only numbers
+  if (!/^\d+$/.test(text)) {
+    return false;
+  }
+  
+  return true;
+}
 
 const authController = {
   captcha:async(req,res) =>{
@@ -37,11 +55,18 @@ const authController = {
 
   sendVerificationCodes: async (req, res) => {
     const { phone,captcha } = req.body;
+	if (!phone) return res.status(400).json({ error: 'شماره تلفن لازم است',type:'phone' });
+    const phoneValid = validateText(phone);
+
+	  if(!phoneValid){
+		res.status(400).json({error:"تلفن وارد شده نا معتبر میباشد",type:'phone'})
+	  }
+	
     const phoneResult = await db.query('SELECT 1 FROM users WHERE phone = $1', [phone]);
     if (phoneResult.rows.length > 0) {
       return res.status(400).json({ error: 'شماره تلفن تکراری است' ,type:'phone'});
     }
-    if (!phone) return res.status(400).json({ error: 'شماره تلفن لازم است',type:'phone' });
+    
     if (!captcha) return res.status(400).json({error:"کد درون عکس لازم است",type:"captcha"})
     if (req.session.captcha !== captcha){
       console.log(req.session.captcha,captcha)
@@ -54,9 +79,9 @@ const authController = {
 
     verificationCodes.set(phone, {code,expiresAt});
 
-    //await sendVerificationCode(phone, code);
+    await sendVerificationCode(phone, code);
 
-    res.json({ success: true,code:code });
+    res.json({ success: true});
   },
 
   verifyCode: (req, res) => {
@@ -79,24 +104,25 @@ const authController = {
   },
 
   completeSignup: async (req, res) => {
-    const { phone,code, firstName, lastName, password,captcha } = req.body;
+    const { phone,code, firstName, lastName, password,pass_conf } = req.body;
     
-    if (!phone || !firstName || !lastName || !password || !code || !captcha) {
+    if (!phone || !firstName || !lastName || !password || !pass_conf ||!code ) {
       console.log(phone,code,firstName,lastName,password,captcha)
       return res.status(400).json({ error: 'تمامی زمینه ها لازم هستند',type:"all" });
     }
     
-    if (req.session.captcha !== captcha){
+    /*if (req.session.captcha !== captcha){
       console.log(req.session.captcha,captcha)
       return res.status(400).json({error:"کد درون عکس را صحیح وارد نمایید",type:"captcha"})
-    }
+    }*/
     const phoneResult = await db.query('SELECT 1 FROM users WHERE phone = $1', [phone]);
     if (phoneResult.rows.length > 0) {
       return res.status(400).json({ error: 'شماره تلفن تکراری است',type:'phone'});
     }
-    if (password.length <8){
+/*    if (password.length <8){
       return res.status(400).json({error:"رمز عبور باید حد اقل 8 کارکتر باشد",type:'pass'})
-    }
+    }*/
+    if (password !== pass_conf){return res.status(400).json({error:"رمز های عبور باید با هم دیگر یکسان باشند",type:"pass"})}
     if (code != verificationCodes.get(phone).code){
       return res.status(400).json({error:"کد تایید منقضی شده است",type:"all"})
     }
@@ -125,6 +151,9 @@ const authController = {
     const { phoneNumber, password,captcha } = req.body;
     if (!phoneNumber || !password || !captcha) return res.status(400).json({ error: 'تمامی زمینه ها لازم هستند' ,type:'all'});
     
+
+    const phoneValid = validateText(phoneNumber);
+	  if (!phoneValid) { return res.status(400).json({error:"شماره وارد شده نامعتبر میباشد",type:"user"})}
     if(req.session.captcha !== captcha){
       console.log(req.session.captcha)
       return res.status(400).json({error:'کد درون عکس را صحیح وارد نمایید',type:'captcha'})
@@ -152,12 +181,19 @@ const authController = {
 
   sendfpVerificationCode: async (req,res) => {
     const { phone ,captcha} = req.body;
+    if (!phone) return res.status(400).json({ error: 'شماره تلفن لازم میباشد',type:'phone' });
+
+    const phoneValid = validateText(phone);
+
+	  if(!phoneValid){
+		res.status(400).json({error:"تلفن وارد شده نا معتبر میباشد",type:'phone'})
+	  }
+	
     const phoneResult = await db.query('SELECT 1 FROM users WHERE phone = $1', [phone]);
     if (phoneResult.rows.length === 0) {
       return res.status(400).json({ error: 'شماره تلفن شما ثبت نشده است' ,type:'phone'});
     }
-    if (!phone) return res.status(400).json({ error: 'شماره تلفن لازم میباشد',type:'phone' });
-    if (!captcha) return res.status(400).json({error:"کد درون عکس لازم میباشد",type:"captcha"})
+       if (!captcha) return res.status(400).json({error:"کد درون عکس لازم میباشد",type:"captcha"})
     if (req.session.captcha !== captcha){
       console.log(req.session.captcha,captcha)
       return res.status(400).json({error:"کد درون عکس را صحیح وارد نمایید",type:"captcha"})
@@ -167,9 +203,9 @@ const authController = {
 
     verificationfpCodes.set(phone, {code,expiresAt});
 
-    //await sendfpVerificationCode(phone, code);
+    await sendfpVerificationCode(phone, code);
 
-    return res.status(200).json({success:true,code:code})
+    return res.status(200).json({success:true})
 
   },
   
@@ -196,23 +232,23 @@ const authController = {
   },
 
   resetPassword: async (req,res) => {
-    const {phone,code,password,conf_password,captcha} = req.body;
+    const {phone,code,password,conf_password} = req.body;
 
-     if (!phone || !code || !password || !conf_password || !captcha) {
+     if (!phone || !code || !password || !conf_password) {
       return res.status(400).json({ error: 'تمامی زمینه ها الزامی هستند',type:"all" });
     }
     
-    if (req.session.captcha !== captcha){
+    /*if (req.session.captcha !== captcha){
       return res.status(400).json({error:'کد درون عکس را صحیح وارد نمایید',type:"captcha"})
-    }
+    }*/
 
     const phoneResult = await db.query('SELECT 1 FROM users WHERE phone = $1', [phone]);
     if (phoneResult.rows.length === 0) {
       return res.status(400).json({ error: 'شماره تلفن وارد شده ثبت نشده است',type:'phone'});
     }
-    if (password.length <8){
+    /*if (password.length <8){
       return res.status(400).json({error:"رمز عبور باید حداقل 8 کارکتر باشد",type:'pass'})
-    }
+    }*/
     if (code != verificationfpCodes.get(phone).code){
       console.log(code);
       console.log(verificationfpCodes.get(phone));

@@ -27,6 +27,7 @@ async function loadCaptcha() {
 
 
 function reloadCaptcha(){
+	document.getElementById('captcha').value = '';
   loadCaptcha()
 }
 
@@ -58,7 +59,7 @@ function sendCode() {
         startCountdown()
         
       } else {
-        loadCaptcha()
+        reloadCaptcha()
         showError(data.error,data.type);
       }
     });
@@ -86,7 +87,7 @@ function updateButtonText(seconds) {
   const secs = seconds % 60;
   const formattedTime = `${mins}:${secs.toString().padStart(2, "0")}`;
 
-  timerText.textContent = `Resend available in ${formattedTime}`;
+  timerText.textContent = `ارسال مجدد در ${formattedTime}`;
 }function resetButton() {
 
   sendCodeBtn.disabled = false;
@@ -109,6 +110,7 @@ function updateButtonText(seconds) {
         document.getElementById('step1').style.display = 'none';
         document.getElementById('step2').style.display = 'block';
       } else {
+	      reloadCaptcha();
         showError(data.error,data.type);
       }
     });
@@ -122,7 +124,8 @@ function finalSignup() {
     firstName: document.getElementById('firstName').value,
     lastName: document.getElementById('lastName').value,
     password: document.getElementById('password').value,
-    captcha: document.getElementById('captcha').value,
+    pass_conf:document.getElementById('pass_conf').value,
+//    captcha: document.getElementById('captcha').value,
   };
 
   fetch('/auth/signup/details', {
@@ -136,7 +139,7 @@ function finalSignup() {
         window.location.href = '/auth/login'; // or /login.html
       } else {
         console.log(details)
-        loadCaptcha()
+        reloadCaptcha()
         showError(data.error,data.type);
       }
     });

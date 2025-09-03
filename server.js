@@ -29,7 +29,7 @@ app.use(session({
   saveUninitialized:false, // only create session when needed
   cookie: {
     httpOnly: true,       // not accessible by JS
-    secure: false,         // send cookie only over HTTPS (set false for local dev without HTTPS)
+    secure: true,         // send cookie only over HTTPS (set false for local dev without HTTPS)
     sameSite: 'strict',   // strict CSRF protection
     maxAge: 5 * 60 * 1000 // 5 minutes expiry
   }

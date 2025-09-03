@@ -10,11 +10,11 @@
   <div class="form-container">
     <h2>ثبت نام</h2>
     <div id="step1" class="step">
-      <input type="text" id="phone" placeholder="شماره تلفن" />
+      <input type="text" id="phone" placeholder="شماره تلفن" dir="ltr" />
       <div id="phone-status"></div>
       <div class="cap-container">
         
-        <input type="text" id="captcha" required autocomplete="off" placeholder="اطلاعات درون عکس را وارد نمایید"/>
+        <input type="text" id="captcha" dir="ltr" required autocomplete="off" placeholder="اطلاعات درون عکس را وارد نمایید"/>
         <img id="captcha-image" title="Click to reload captcha" alt="captcha" />
         <button onclick="reloadCaptcha()" id="reloadcaptcha">
         <img src="/icons/reload.png" alt="reload" style="width:20px; height:20px;">
@@ -23,7 +23,7 @@
       </div>
       <div id="captcha-status"></div>
       <div id="verify" class="step" >
-        <input type="text" id="code" placeholder="کد تایید" />
+        <input type="text" id="code" placeholder="کد تایید" dir="ltr"/>
         <button onclick="sendCode()" id="codebutton">فرستادن کد</button>
         <div id="timerText" aria-live="polite"></div>
         <div id="code-status"></div>
@@ -35,10 +35,11 @@
 
 
     <div id="step2" class="step" style="display: none;">
-      <input type="text" id="firstName" placeholder="نام" />
-      <input type="text" id="lastName" placeholder="نام خانوادگی" />
+      <input type="text" class="per" id="firstName" placeholder="نام" />
+      <input type="text" class="per" id="lastName" placeholder="نام خانوادگی" />
 
-      <input type="password" id="password" placeholder="رمز عبور" />
+      <input type="password" id="password" placeholder="رمز عبور" dir="ltr" />
+      <input type="password" id="pass_conf" placeholder="تایید رمز عبور" dir="ltr" />
       <div id="pass-status"></div>
       
       <div class="button_wrapper">
